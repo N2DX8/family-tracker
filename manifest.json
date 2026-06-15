@@ -1,0 +1,27 @@
+{
+  "name": "Family Spending Tracker",
+  "short_name": "Tracker",
+  "description": "Family spending tracker — Naufal, Wazif, Ibu, Abah & Amna",
+  "start_url": "./spending-tracker.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "lang": "en-MY"
+}

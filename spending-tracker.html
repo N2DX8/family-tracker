@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Family Tracker"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<meta name="theme-color" content="#007aff"/>
+<title>Family Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#f2f2f7;--card:#fff;--text:#1c1c1e;--sub:#8e8e93;
+  --border:#c6c6c8;--radius:14px;--tab-h:84px;
+  --safe-b:env(safe-area-inset-bottom,20px);
+  --user:#007aff;
+}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  color:var(--text);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+
+/* ── USER PICKER ─────────────────── */
+.picker{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;flex-direction:column;background:var(--bg);
+}
+.picker.hidden{display:none;}
+.picker-head{
+  padding:max(56px,env(safe-area-inset-top)) 24px 24px;
+  background:var(--user);color:#fff;text-align:center;
+}
+.picker-head h1{font-size:26px;font-weight:800;letter-spacing:-.4px;}
+.picker-head p{font-size:14px;opacity:.8;margin-top:5px;}
+.picker-list{flex:1;overflow-y:auto;padding:20px 16px 40px;}
+.picker-card{
+  background:var(--card);border-radius:var(--radius);margin-bottom:12px;
+  padding:18px 20px;display:flex;align-items:center;gap:16px;
+  cursor:pointer;transition:transform .12s;border:2px solid transparent;
+  -webkit-user-select:none;
+}
+.picker-card:active{transform:scale(.97);}
+.p-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:26px;flex-shrink:0;}
+.p-info{flex:1;}
+.p-name{font-size:18px;font-weight:700;}
+.p-role{font-size:13px;color:var(--sub);margin-top:2px;}
+.p-arrow{font-size:20px;color:var(--sub);}
+
+/* ── HEADER ──────────────────────── */
+.header{
+  padding:16px 20px 12px;
+  padding-top:max(16px,env(safe-area-inset-top));
+  background:rgba(242,242,247,.95);backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.h-left{display:flex;align-items:center;gap:10px;}
+.h-avatar{width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;flex-shrink:0;}
+.h-title{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+.h-date{font-size:12px;color:var(--sub);}
+.h-right{text-align:right;}
+.h-lbl{font-size:10px;color:var(--sub);font-weight:500;}
+.h-amt{font-size:17px;font-weight:700;color:var(--user);}
+
+/* ── CONTENT & SCREENS ───────────── */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:calc(var(--tab-h) + 4px);}
+.screen{display:none;padding:16px 16px 8px;}
+.screen.active{display:block;}
+
+/* ── TAB BAR ─────────────────────── */
+.tabbar{
+  position:fixed;bottom:0;left:0;right:0;
+  height:var(--tab-h);padding-bottom:var(--safe-b);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:.5px solid var(--border);
+  display:flex;align-items:flex-start;padding-top:8px;z-index:200;
+}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:4px 0;-webkit-user-select:none;}
+.tab:active{opacity:.6;}
+.tab-icon{font-size:21px;line-height:1;}
+.tab-label{font-size:9px;font-weight:500;color:var(--sub);}
+.tab.active .tab-label{color:var(--user);}
+
+/* ── CARDS ───────────────────────── */
+.card{background:var(--card);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.card-head{padding:14px 16px 10px;border-bottom:.5px solid #f2f2f7;
+  display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:13px;font-weight:600;color:var(--sub);
+  text-transform:uppercase;letter-spacing:.4px;}
+
+/* ── ADD SCREEN ──────────────────── */
+.amt-box{background:var(--card);border-radius:var(--radius);
+  padding:24px 20px 20px;margin-bottom:12px;text-align:center;}
+.amt-lbl{font-size:13px;color:var(--sub);font-weight:500;margin-bottom:8px;}
+.amt-row{display:flex;align-items:center;justify-content:center;gap:8px;}
+.amt-cur{font-size:28px;font-weight:300;color:var(--sub);}
+.amt-input{
+  font-size:48px;font-weight:700;letter-spacing:-2px;
+  border:none;outline:none;background:transparent;
+  width:180px;text-align:center;-moz-appearance:textfield;
+}
+.amt-input::-webkit-inner-spin-button,.amt-input::-webkit-outer-spin-button{-webkit-appearance:none;}
+.amt-input::placeholder{color:#c7c7cc;}
+
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.cat-btn{
+  background:var(--card);border-radius:12px;border:2px solid transparent;
+  padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;transition:transform .12s,border-color .15s;-webkit-user-select:none;
+}
+.cat-btn:active{transform:scale(.93);}
+.cat-btn.sel{background:rgba(0,122,255,.08);border-color:var(--user);}
+.cat-icon{font-size:22px;line-height:1;}
+.cat-name{font-size:10px;font-weight:600;color:var(--sub);}
+.cat-btn.sel .cat-name{color:var(--user);}
+
+.note-card{background:var(--card);border-radius:var(--radius);margin-bottom:12px;}
+.note-input{width:100%;padding:14px 16px;border:none;outline:none;
+  background:transparent;font-size:15px;font-family:inherit;}
+.note-input::placeholder{color:#c7c7cc;}
+
+.add-btn{
+  width:100%;border:none;border-radius:var(--radius);
+  padding:16px;font-size:17px;font-weight:600;cursor:pointer;
+  font-family:inherit;background:var(--user);color:#fff;
+  transition:transform .12s,opacity .12s;
+}
+.add-btn:active{transform:scale(.97);opacity:.9;}
+.add-btn:disabled{background:#c7c7cc;cursor:default;}
+
+/* ── TODAY SCREEN ────────────────── */
+.today-hero{border-radius:var(--radius);padding:24px 20px;
+  margin-bottom:12px;color:#fff;text-align:center;background:var(--user);}
+.th-lbl{font-size:13px;opacity:.8;margin-bottom:6px;}
+.th-amt{font-size:44px;font-weight:700;letter-spacing:-2px;}
+.th-sub{font-size:13px;opacity:.7;margin-top:4px;}
+
+.entry-item{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;border-bottom:.5px solid #f2f2f7;
+  cursor:pointer;transition:background .1s;
+}
+.entry-item:last-child{border-bottom:none;}
+.entry-item:active{background:#f2f2f7;}
+.e-dot{width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.e-info{flex:1;}
+.e-cat{font-size:14px;font-weight:600;}
+.e-note{font-size:12px;color:var(--sub);margin-top:1px;}
+.e-time{font-size:11px;color:var(--sub);}
+.e-amt{font-size:16px;font-weight:700;}
+
+.bar-item{padding:10px 16px;border-bottom:.5px solid #f2f2f7;}
+.bar-item:last-child{border-bottom:none;}
+.bar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.bar-name{font-size:13px;font-weight:600;}
+.bar-val{font-size:13px;font-weight:600;}
+.bar-track{height:4px;background:#f2f2f7;border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s ease;}
+.bar-pct{font-size:11px;color:var(--sub);margin-top:3px;}
+
+.empty{text-align:center;padding:40px 20px;color:var(--sub);}
+.empty-icon{font-size:36px;margin-bottom:10px;}
+.empty-text{font-size:15px;font-weight:500;}
+.empty-sub{font-size:13px;margin-top:4px;opacity:.7;}
+
+/* ── WEEK SCREEN ─────────────────── */
+.week-hero{
+  background:linear-gradient(135deg,#1c1c1e,#2c2c2e);
+  border-radius:var(--radius);padding:24px 20px;margin-bottom:12px;color:#fff;
+}
+.wh-lbl{font-size:13px;opacity:.6;margin-bottom:4px;}
+.wh-amt{font-size:40px;font-weight:700;letter-spacing:-1.5px;margin-bottom:4px;}
+.wh-range{font-size:12px;opacity:.5;}
+.wh-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px;}
+.wh-stat{background:rgba(255,255,255,.07);border-radius:10px;padding:12px;}
+.wh-stat-lbl{font-size:10px;opacity:.6;margin-bottom:4px;}
+.wh-stat-val{font-size:17px;font-weight:700;}
+
+.chart-wrap{padding:16px;}
+canvas{display:block;width:100%;}
+
+.day-row{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:.5px solid #f2f2f7;}
+.day-row:last-child{border-bottom:none;}
+.day-lbl{font-size:14px;font-weight:600;}
+.day-sub{font-size:11px;color:var(--sub);margin-top:1px;}
+.day-amt{font-size:14px;font-weight:700;}
+.day-today .day-lbl{color:var(--user);}
+
+/* ── FAMILY SCREEN ───────────────── */
+.fam-hero{
+  background:linear-gradient(135deg,#1a2744,#0071e3);
+  border-radius:var(--radius);padding:24px 20px;margin-bottom:12px;color:#fff;
+}
+.fh-lbl{font-size:13px;opacity:.7;margin-bottom:6px;}
+.fh-amt{font-size:40px;font-weight:700;letter-spacing:-1.5px;}
+.fh-range{font-size:12px;opacity:.6;margin-top:4px;}
+
+.member-row{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;border-bottom:.5px solid #f2f2f7;
+}
+.member-row:last-child{border-bottom:none;}
+.m-avatar{width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.m-info{flex:1;}
+.m-name{font-size:14px;font-weight:600;}
+.m-sub{font-size:12px;color:var(--sub);margin-top:1px;}
+.m-bar-wrap{width:72px;}
+.m-bar-track{height:4px;background:#f2f2f7;border-radius:2px;overflow:hidden;margin-bottom:3px;}
+.m-bar-fill{height:100%;border-radius:2px;}
+.m-amt{font-size:14px;font-weight:700;text-align:right;min-width:70px;}
+
+/* ── SETTINGS SCREEN ─────────────── */
+.profile-card{
+  border-radius:var(--radius);padding:20px;margin-bottom:12px;
+  color:#fff;display:flex;align-items:center;gap:16px;
+  background:var(--user);
+}
+.profile-avatar{width:52px;height:52px;border-radius:50%;
+  background:rgba(255,255,255,.2);display:flex;align-items:center;
+  justify-content:center;font-size:28px;flex-shrink:0;}
+.profile-name{font-size:17px;font-weight:700;}
+.profile-sub{font-size:12px;opacity:.8;margin-top:3px;}
+
+.s-row{
+  display:flex;align-items:center;padding:14px 16px;border-bottom:.5px solid #f2f2f7;
+  cursor:pointer;transition:background .1s;-webkit-user-select:none;
+}
+.s-row:last-child{border-bottom:none;}
+.s-row:active{background:#f2f2f7;}
+.s-icon{font-size:20px;margin-right:14px;width:28px;text-align:center;}
+.s-text{flex:1;}
+.s-lbl{font-size:15px;}
+.s-sub{font-size:12px;color:var(--sub);margin-top:1px;}
+.s-arrow{color:var(--sub);font-size:13px;}
+
+/* ── TOAST ───────────────────────── */
+.toast{
+  position:fixed;bottom:calc(var(--tab-h) + 16px);left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#1c1c1e;color:#fff;padding:10px 20px;border-radius:980px;
+  font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;
+  white-space:nowrap;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── OFFLINE BADGE ───────────────── */
+.offline-badge{
+  position:fixed;top:max(env(safe-area-inset-top),52px);right:12px;
+  background:#34c759;color:#fff;font-size:10px;font-weight:700;
+  padding:4px 10px;border-radius:980px;z-index:999;
+  opacity:0;transition:opacity .5s;pointer-events:none;
+}
+.offline-badge.show{opacity:1;}
+
+/* ── ACTION SHEET ────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;
+  display:none;align-items:flex-end;justify-content:center;
+  padding-bottom:env(safe-area-inset-bottom);}
+.overlay.show{display:flex;}
+.action-sheet{background:#fff;border-radius:14px 14px 0 0;width:100%;max-width:480px;}
+.as-title{padding:14px;text-align:center;font-size:13px;color:var(--sub);border-bottom:.5px solid #f2f2f7;}
+.as-btn{width:100%;padding:16px;border:none;background:#fff;font-size:17px;
+  cursor:pointer;border-bottom:.5px solid #f2f2f7;font-family:inherit;display:block;}
+.as-btn.red{color:#ff3b30;}
+.as-btn.cancel{font-weight:700;margin-top:8px;border:none;border-radius:14px;}
+.as-btn:active{background:#f2f2f7;}
+</style>
+</head>
+<body>
+
+<!-- ═══ USER PICKER ═══ -->
+<div class="picker" id="picker">
+  <div class="picker-head">
+    <h1>👨‍👩‍👧‍👦 Family Tracker</h1>
+    <p>Who's spending today?</p>
+  </div>
+  <div class="picker-list" id="pickerList"></div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div class="header">
+  <div class="h-left">
+    <div class="h-avatar" id="hAvatar" onclick="switchUser()"></div>
+    <div>
+      <div class="h-title" id="hTitle">Family Tracker</div>
+      <div class="h-date" id="hDate"></div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="h-lbl">TODAY</div>
+    <div class="h-amt" id="hAmt">RM 0.00</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ADD -->
+  <div class="screen active" id="screen-add">
+    <div class="amt-box">
+      <div class="amt-lbl">How much did you spend?</div>
+      <div class="amt-row">
+        <span class="amt-cur">RM</span>
+        <input class="amt-input" id="amtInput" type="number"
+          inputmode="decimal" step="0.01" min="0" placeholder="0.00"/>
+      </div>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div class="note-card card">
+      <input class="note-input" id="noteInput" type="text"
+        placeholder="Add a note (optional)…" maxlength="80"/>
+    </div>
+    <button class="add-btn" id="addBtn" disabled onclick="addEntry()">
+      Select a category
+    </button>
+  </div>
+
+  <!-- TODAY -->
+  <div class="screen" id="screen-today">
+    <div class="today-hero">
+      <div class="th-lbl">Total spent today</div>
+      <div class="th-amt" id="todayAmt">RM 0.00</div>
+      <div class="th-sub" id="todaySub">No entries yet</div>
+    </div>
+    <div class="card" id="todayCatCard" style="display:none">
+      <div class="card-head"><span class="card-title">By Category</span></div>
+      <div id="todayCatBars"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Entries</span>
+        <span id="todayCount" style="font-size:12px;color:var(--sub)"></span>
+      </div>
+      <div id="todayList">
+        <div class="empty"><div class="empty-icon">☕</div>
+          <div class="empty-text">No spending today</div>
+          <div class="empty-sub">Tap ➕ to add your first entry</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK -->
+  <div class="screen" id="screen-week">
+    <div class="week-hero">
+      <div class="wh-lbl">Your spending this week</div>
+      <div class="wh-amt" id="weekAmt">RM 0.00</div>
+      <div class="wh-range" id="weekRange"></div>
+      <div class="wh-stats">
+        <div class="wh-stat">
+          <div class="wh-stat-lbl">DAILY AVG</div>
+          <div class="wh-stat-val" id="weekAvg">RM 0</div>
+        </div>
+        <div class="wh-stat">
+          <div class="wh-stat-lbl">HIGHEST</div>
+          <div class="wh-stat-val" id="weekPeak">RM 0</div>
+        </div>
+        <div class="wh-stat">
+          <div class="wh-stat-lbl">ENTRIES</div>
+          <div class="wh-stat-val" id="weekCount">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Daily Spending</span></div>
+      <div class="chart-wrap"><canvas id="weekChart" height="180"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Category Breakdown</span></div>
+      <div id="weekCatBars"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Day by Day</span></div>
+      <div id="dayList"></div>
+    </div>
+  </div>
+
+  <!-- FAMILY -->
+  <div class="screen" id="screen-family">
+    <div class="fam-hero">
+      <div class="fh-lbl">👨‍👩‍👧‍👦 Family — This Week</div>
+      <div class="fh-amt" id="famAmt">RM 0.00</div>
+      <div class="fh-range" id="famRange"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Daily Family Spending</span></div>
+      <div class="chart-wrap"><canvas id="famChart" height="180"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">By Member</span></div>
+      <div id="memberList"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">All Categories Combined</span></div>
+      <div id="famCatBars"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="profile-card">
+      <div class="profile-avatar" id="profAvatar"></div>
+      <div>
+        <div class="profile-name" id="profName"></div>
+        <div class="profile-sub" id="profRole"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Account</span></div>
+      <div class="s-row" onclick="switchUser()">
+        <span class="s-icon">👤</span>
+        <div class="s-text">
+          <div class="s-lbl">Switch User</div>
+          <div class="s-sub">Change to a different family member</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Data</span></div>
+      <div class="s-row" onclick="exportMyData()">
+        <span class="s-icon">📤</span>
+        <div class="s-text">
+          <div class="s-lbl">Export My Data (JSON)</div>
+          <div class="s-sub">Save your spending for Claude's weekly report</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+      <div class="s-row" onclick="exportFamilyData()">
+        <span class="s-icon">👨‍👩‍👧‍👦</span>
+        <div class="s-text">
+          <div class="s-lbl">Export Family Data (JSON)</div>
+          <div class="s-sub">All 5 members combined for family report</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+      <div class="s-row" onclick="importData()">
+        <span class="s-icon">📥</span>
+        <div class="s-text">
+          <div class="s-lbl">Import Data (JSON)</div>
+          <div class="s-sub">Restore from a previous export</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+      <div class="s-row" onclick="copyClipboard()">
+        <span class="s-icon">📋</span>
+        <div class="s-text">
+          <div class="s-lbl">Copy My Data to Clipboard</div>
+          <div class="s-sub">Paste into spending-data.json manually</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">App</span></div>
+      <div class="s-row">
+        <span class="s-icon">📊</span>
+        <div class="s-text">
+          <div class="s-lbl">All-time Stats</div>
+          <div class="s-sub" id="statsInfo">Loading…</div>
+        </div>
+      </div>
+      <div class="s-row" onclick="confirmClear()">
+        <span class="s-icon" style="color:#ff3b30">🗑️</span>
+        <div class="s-text">
+          <div class="s-lbl" style="color:#ff3b30">Clear My Data</div>
+          <div class="s-sub">Delete only your entries — cannot be undone</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+    </div>
+    <div style="text-align:center;padding:20px;font-size:12px;color:var(--sub)">
+      Family Spending Tracker · UM 2026<br/>Data stored locally on this device
+    </div>
+    <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)"/>
+  </div>
+
+</div>
+
+<!-- TAB BAR -->
+<div class="tabbar">
+  <div class="tab active" onclick="go('add')" id="tab-add">
+    <span class="tab-icon">➕</span><span class="tab-label">Add</span>
+  </div>
+  <div class="tab" onclick="go('today')" id="tab-today">
+    <span class="tab-icon">📋</span><span class="tab-label">Today</span>
+  </div>
+  <div class="tab" onclick="go('week')" id="tab-week">
+    <span class="tab-icon">📊</span><span class="tab-label">Week</span>
+  </div>
+  <div class="tab" onclick="go('family')" id="tab-family">
+    <span class="tab-icon">👨‍👩‍👧‍👦</span><span class="tab-label">Family</span>
+  </div>
+  <div class="tab" onclick="go('settings')" id="tab-settings">
+    <span class="tab-icon">⚙️</span><span class="tab-label">Settings</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="offline-badge" id="offlineBadge">✅ Saved for offline</div>
+
+<div class="overlay" id="overlay" onclick="closeSheet()">
+  <div class="action-sheet" onclick="event.stopPropagation()">
+    <div class="as-title" id="asTitle"></div>
+    <div id="asBtns"></div>
+    <button class="as-btn cancel" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+const USERS = [
+  {id:'naufal', name:'Naufal', emoji:'🎓', role:'Student · 18',  color:'#007aff'},
+  {id:'wazif',  name:'Wazif',  emoji:'🎮', role:'School · 16',   color:'#34c759'},
+  {id:'ibu',    name:'Ibu',    emoji:'👩', role:'Mother · 45',   color:'#ff9500'},
+  {id:'abah',   name:'Abah',   emoji:'👨', role:'Father · 45',   color:'#5856d6'},
+  {id:'amna',   name:'Amna',   emoji:'🌸', role:'School · 14',   color:'#ff2d55'},
+];
+
+const CATS = {
+  naufal:[
+    {id:'food',          name:'Food',       icon:'🍜', color:'#ff9500'},
+    {id:'transport',     name:'Transport',  icon:'🚌', color:'#007aff'},
+    {id:'entertainment', name:'Fun',        icon:'🎮', color:'#af52de'},
+    {id:'study',         name:'Study',      icon:'📚', color:'#34c759'},
+    {id:'personal',      name:'Personal',   icon:'🧴', color:'#ff2d55'},
+    {id:'savings',       name:'Savings',    icon:'💰', color:'#e6b800'},
+    {id:'health',        name:'Health',     icon:'💊', color:'#32ade6'},
+    {id:'other',         name:'Other',      icon:'💸', color:'#8e8e93'},
+  ],
+  wazif:[
+    {id:'food',     name:'Food',    icon:'🍜', color:'#ff9500'},
+    {id:'transport',name:'Bus/LRT', icon:'🚌', color:'#007aff'},
+    {id:'games',    name:'Games',   icon:'🎮', color:'#af52de'},
+    {id:'school',   name:'School',  icon:'📚', color:'#34c759'},
+    {id:'clothing', name:'Clothing',icon:'👟', color:'#ff2d55'},
+    {id:'hangout',  name:'Hangout', icon:'🎬', color:'#5856d6'},
+    {id:'health',   name:'Health',  icon:'💊', color:'#32ade6'},
+    {id:'other',    name:'Other',   icon:'💸', color:'#8e8e93'},
+  ],
+  ibu:[
+    {id:'groceries',   name:'Groceries',icon:'🛒', color:'#ff9500'},
+    {id:'household',   name:'Household',icon:'🏠', color:'#007aff'},
+    {id:'medical',     name:'Medical',  icon:'💊', color:'#32ade6'},
+    {id:'clothing',    name:'Clothing', icon:'👗', color:'#ff2d55'},
+    {id:'personalcare',name:'Self Care',icon:'💅', color:'#af52de'},
+    {id:'dining',      name:'Dining',   icon:'🍽️', color:'#e6b800'},
+    {id:'utilities',   name:'Utilities',icon:'💡', color:'#34c759'},
+    {id:'other',       name:'Other',    icon:'💸', color:'#8e8e93'},
+  ],
+  abah:[
+    {id:'petrol',    name:'Petrol',   icon:'⛽', color:'#ff9500'},
+    {id:'groceries', name:'Groceries',icon:'🛒', color:'#34c759'},
+    {id:'bills',     name:'Bills',    icon:'💡', color:'#e6b800'},
+    {id:'car',       name:'Car',      icon:'🔧', color:'#8e8e93'},
+    {id:'medical',   name:'Medical',  icon:'💊', color:'#32ade6'},
+    {id:'dining',    name:'Dining',   icon:'🍽️', color:'#af52de'},
+    {id:'work',      name:'Work',     icon:'💼', color:'#5856d6'},
+    {id:'other',     name:'Other',    icon:'💸', color:'#007aff'},
+  ],
+  amna:[
+    {id:'food',          name:'Food',    icon:'🍜', color:'#ff9500'},
+    {id:'transport',     name:'Bus',     icon:'🚌', color:'#007aff'},
+    {id:'entertainment', name:'Fun',     icon:'🎡', color:'#af52de'},
+    {id:'school',        name:'School',  icon:'📚', color:'#34c759'},
+    {id:'snacks',        name:'Snacks',  icon:'🍭', color:'#ff2d55'},
+    {id:'clothing',      name:'Clothing',icon:'👗', color:'#e6b800'},
+    {id:'health',        name:'Health',  icon:'💊', color:'#32ade6'},
+    {id:'other',         name:'Other',   icon:'💸', color:'#8e8e93'},
+  ],
+};
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let CU = null;         // current user object
+let ALL = {};          // all users' data
+let selCat = null;
+let delTarget = null;
+
+// ══════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════
+function loadAll(){
+  USERS.forEach(u=>{
+    try { ALL[u.id] = JSON.parse(localStorage.getItem('sp_'+u.id)||'{"entries":[]}'); }
+    catch(e){ ALL[u.id]={entries:[]}; }
+  });
+}
+function save(uid){ localStorage.setItem('sp_'+uid, JSON.stringify(ALL[uid])); }
+function ud(){ return ALL[CU.id]; }
+function cats(){ return CATS[CU.id]; }
+function cm(){ return Object.fromEntries(cats().map(c=>[c.id,c])); }
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+const fmt = n => 'RM ' + (+n).toFixed(2);
+const today = () => new Date().toISOString().slice(0,10);
+function weekDates(){
+  const a=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    a.push(d.toISOString().slice(0,10));
+  }
+  return a;
+}
+function dayLabel(iso){
+  const d=new Date(iso+'T00:00');
+  return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+
+    ', '+d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+}
+function eFor(uid,date){ return ALL[uid].entries.filter(e=>e.date===date); }
+function totFor(uid,date){ return eFor(uid,date).reduce((s,e)=>s+e.amount,0); }
+function weekE(uid){ return weekDates().flatMap(d=>eFor(uid,d)); }
+function weekTot(uid){ return weekDates().reduce((s,d)=>s+totFor(uid,d),0); }
+function fmtTime(ts){ return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}); }
+function toast(msg,d=1800){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),d);
+}
+
+// ══════════════════════════════════════════════
+// CANVAS CHART (no CDN needed)
+// ══════════════════════════════════════════════
+function drawChart(id, labels, data, colors, highlightIdx=-1){
+  const canvas=document.getElementById(id); if(!canvas) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-32;
+  const H=180;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const max=Math.max(...data,1);
+  const n=labels.length;
+  const pad={t:16,r:8,b:28,l:50};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const slot=cW/n;
+  const bW=Math.min(slot*0.55,32);
+
+  // Grid + Y labels
+  ctx.strokeStyle='#f2f2f7'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH*(i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    const v=max*(1-i/4);
+    ctx.fillStyle='#8e8e93';
+    ctx.font='10px -apple-system';
+    ctx.textAlign='right';
+    ctx.fillText(v>=1?'RM'+v.toFixed(0):'0', pad.l-4, y+4);
+  }
+
+  // Bars
+  data.forEach((val,i)=>{
+    const x=pad.l+slot*i+(slot-bW)/2;
+    const bH=(val/max)*cH;
+    const y=pad.t+cH-bH;
+    const r=Math.min(6,bW/2);
+    ctx.fillStyle=i===highlightIdx?(CU?CU.color:'#007aff'):(colors[i]||'#c7c7cc');
+
+    if(bH>0){
+      ctx.beginPath();
+      ctx.moveTo(x+r,y); ctx.lineTo(x+bW-r,y);
+      ctx.quadraticCurveTo(x+bW,y,x+bW,y+r);
+      ctx.lineTo(x+bW,y+bH); ctx.lineTo(x,y+bH); ctx.lineTo(x,y+r);
+      ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.fill();
+    }
+
+    ctx.fillStyle=i===highlightIdx?(CU?CU.color:'#007aff'):'#8e8e93';
+    ctx.font='bold 11px -apple-system';
+    ctx.textAlign='center';
+    ctx.fillText(labels[i], x+bW/2, H-8);
+  });
+}
+
+// ══════════════════════════════════════════════
+// USER PICKER
+// ══════════════════════════════════════════════
+function buildPicker(){
+  document.getElementById('pickerList').innerHTML = USERS.map(u=>`
+    <div class="picker-card" onclick="selectUser('${u.id}')">
+      <div class="p-avatar" style="background:${u.color}20">${u.emoji}</div>
+      <div class="p-info">
+        <div class="p-name">${u.name}</div>
+        <div class="p-role">${u.role}</div>
+      </div>
+      <div class="p-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+function selectUser(uid){
+  CU = USERS.find(u=>u.id===uid);
+  localStorage.setItem('sp_cur', uid);
+  document.getElementById('picker').classList.add('hidden');
+  applyTheme();
+  buildCatGrid();
+  refreshHeader();
+  renderToday();
+}
+
+function switchUser(){
+  document.getElementById('picker').classList.remove('hidden');
+}
+
+function applyTheme(){
+  if(!CU) return;
+  const r=document.documentElement;
+  r.style.setProperty('--user', CU.color);
+  document.getElementById('hAvatar').textContent=CU.emoji;
+  document.getElementById('hAvatar').style.background=CU.color+'20';
+  document.getElementById('hTitle').textContent=CU.name+"'s Tracker";
+  document.getElementById('profAvatar').textContent=CU.emoji;
+  document.getElementById('profName').textContent=CU.name;
+  document.getElementById('profRole').textContent=CU.role;
+}
+
+// ══════════════════════════════════════════════
+// HEADER
+// ══════════════════════════════════════════════
+function refreshHeader(){
+  document.getElementById('hDate').textContent=
+    new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('hAmt').textContent=fmt(totFor(CU.id,today()));
+}
+
+// ══════════════════════════════════════════════
+// ADD
+// ══════════════════════════════════════════════
+function buildCatGrid(){
+  document.getElementById('catGrid').innerHTML=cats().map(c=>`
+    <div class="cat-btn" id="cb-${c.id}" onclick="selCatFn('${c.id}')">
+      <span class="cat-icon">${c.icon}</span>
+      <span class="cat-name">${c.name}</span>
+    </div>
+  `).join('');
+  selCat=null;
+  document.getElementById('addBtn').disabled=true;
+  document.getElementById('addBtn').textContent='Select a category';
+}
+
+function selCatFn(id){
+  selCat=id;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('sel',b.id==='cb-'+id));
+  updateBtn();
+}
+
+function updateBtn(){
+  const val=parseFloat(document.getElementById('amtInput').value);
+  const btn=document.getElementById('addBtn');
+  const c=cm()[selCat];
+  if(selCat&&val>0){ btn.disabled=false; btn.textContent=`Add ${fmt(val)} · ${c.icon} ${c.name}`; }
+  else if(!selCat){ btn.disabled=true; btn.textContent='Select a category'; }
+  else { btn.disabled=true; btn.textContent='Enter an amount'; }
+}
+
+function addEntry(){
+  const amount=parseFloat(document.getElementById('amtInput').value);
+  const note=document.getElementById('noteInput').value.trim();
+  if(!selCat||!amount||amount<=0) return;
+  ud().entries.push({id:Date.now().toString(),date:today(),amount,note,category:selCat,timestamp:Date.now()});
+  save(CU.id);
+  document.getElementById('amtInput').value='';
+  document.getElementById('noteInput').value='';
+  selCatFn=()=>{}; // temp silence
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('sel'));
+  selCat=null;
+  selCatFn=_selCatFn; // restore
+  document.getElementById('addBtn').disabled=true;
+  document.getElementById('addBtn').textContent='Select a category';
+  const c=cm()[amount>0?amount:selCat]||cats()[0]; // find from saved
+  toast(`✅ ${fmt(amount)} added`);
+  refreshHeader();
+  if(document.getElementById('screen-today').classList.contains('active')) renderToday();
+}
+
+// patch after definition
+const _selCatFn = selCatFn;
+
+// ══════════════════════════════════════════════
+// TODAY
+// ══════════════════════════════════════════════
+function renderToday(){
+  if(!CU) return;
+  const entries=eFor(CU.id,today()).slice().reverse();
+  const total=entries.reduce((s,e)=>s+e.amount,0);
+  const map=cm();
+
+  document.getElementById('todayAmt').textContent=fmt(total);
+  document.getElementById('todaySub').textContent=
+    entries.length===0?'No entries yet':entries.length+' transaction'+(entries.length!==1?'s':'');
+
+  // Cat bars
+  const catCard=document.getElementById('todayCatCard');
+  if(entries.length>0){
+    catCard.style.display='';
+    const ct={};
+    entries.forEach(e=>{ct[e.category]=(ct[e.category]||0)+e.amount;});
+    document.getElementById('todayCatBars').innerHTML=
+      Object.entries(ct).sort((a,b)=>b[1]-a[1]).map(([id,amt])=>{
+        const c=map[id]||{name:id,icon:'💸',color:'#8e8e93'};
+        const pct=total>0?(amt/total*100):0;
+        return `<div class="bar-item">
+          <div class="bar-row"><span class="bar-name">${c.icon} ${c.name}</span><span class="bar-val">${fmt(amt)}</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
+          <div class="bar-pct">${pct.toFixed(0)}%</div></div>`;
+      }).join('');
+  } else { catCard.style.display='none'; }
+
+  document.getElementById('todayCount').textContent=entries.length>0?entries.length+' items':'';
+  const el=document.getElementById('todayList');
+  if(entries.length===0){
+    el.innerHTML='<div class="empty"><div class="empty-icon">☕</div><div class="empty-text">No spending today</div><div class="empty-sub">Tap ➕ to add your first entry</div></div>';
+  } else {
+    el.innerHTML=entries.map(e=>{
+      const c=map[e.category]||{name:e.category,icon:'💸',color:'#8e8e93'};
+      return `<div class="entry-item" onclick="entryAction('${e.id}')">
+        <div class="e-dot" style="background:${c.color}20">${c.icon}</div>
+        <div class="e-info">
+          <div class="e-cat">${c.name}</div>
+          ${e.note?`<div class="e-note">${e.note}</div>`:''}
+          <div class="e-time">${fmtTime(e.timestamp)}</div>
+        </div>
+        <div class="e-amt">−${fmt(e.amount)}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function entryAction(id){
+  delTarget=id;
+  const e=ud().entries.find(x=>x.id===id); if(!e) return;
+  const c=cm()[e.category]||{name:e.category,icon:'💸'};
+  showSheet(`${c.icon} ${c.name} — ${fmt(e.amount)}${e.note?' · '+e.note:''}`,
+    [{l:'🗑️ Delete this entry',cls:'red',fn:'delEntry'}]);
+}
+function delEntry(){
+  ALL[CU.id].entries=ud().entries.filter(e=>e.id!==delTarget);
+  save(CU.id); closeSheet(); renderToday(); refreshHeader(); toast('Entry deleted');
+}
+
+// ══════════════════════════════════════════════
+// WEEK
+// ══════════════════════════════════════════════
+function renderWeek(){
+  if(!CU) return;
+  const dates=weekDates();
+  const totals=dates.map(d=>totFor(CU.id,d));
+  const allE=weekE(CU.id);
+  const wt=totals.reduce((s,v)=>s+v,0);
+  const active=totals.filter(v=>v>0).length;
+  const map=cm();
+
+  document.getElementById('weekAmt').textContent=fmt(wt);
+  document.getElementById('weekAvg').textContent=fmt(active>0?wt/active:0);
+  document.getElementById('weekPeak').textContent=fmt(Math.max(...totals,0));
+  document.getElementById('weekCount').textContent=allE.length;
+
+  const s=dates[0],e=dates[6];
+  document.getElementById('weekRange').textContent=
+    new Date(s+'T00:00').toLocaleDateString([],{month:'short',day:'numeric'})+' – '+
+    new Date(e+'T00:00').toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});
+
+  const labels=dates.map(d=>['S','M','T','W','T','F','S'][new Date(d+'T00:00').getDay()]);
+  const todayIdx=dates.indexOf(today());
+  const colors=totals.map((_,i)=>i===todayIdx?CU.color:'#c7c7cc');
+  setTimeout(()=>drawChart('weekChart',labels,totals,colors,todayIdx),50);
+
+  // Cat breakdown
+  const ct={};
+  allE.forEach(e=>{ct[e.category]=(ct[e.category]||0)+e.amount;});
+  document.getElementById('weekCatBars').innerHTML=Object.keys(ct).length>0?
+    Object.entries(ct).sort((a,b)=>b[1]-a[1]).map(([id,amt])=>{
+      const c=map[id]||{name:id,icon:'💸',color:'#8e8e93'};
+      const pct=wt>0?(amt/wt*100):0;
+      return `<div class="bar-item">
+        <div class="bar-row"><span class="bar-name">${c.icon} ${c.name}</span><span class="bar-val">${fmt(amt)}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
+        <div class="bar-pct">${pct.toFixed(0)}% of weekly spending</div></div>`;
+    }).join('')
+    :'<div class="empty" style="padding:24px"><div class="empty-text">No data this week</div></div>';
+
+  // Day list
+  document.getElementById('dayList').innerHTML=dates.slice().reverse().map(d=>{
+    const t=totFor(CU.id,d), cnt=eFor(CU.id,d).length, isT=d===today();
+    return `<div class="day-row${isT?' day-today':''}">
+      <div><div class="day-lbl">${isT?'Today':dayLabel(d)}</div>
+        <div class="day-sub">${cnt===0?'No spending':cnt+' transaction'+(cnt!==1?'s':'')}</div>
+      </div>
+      <div class="day-amt" style="${t>0?'color:'+CU.color:''}">${t>0?fmt(t):'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// FAMILY
+// ══════════════════════════════════════════════
+function renderFamily(){
+  const dates=weekDates();
+  const famDaily=dates.map(d=>USERS.reduce((s,u)=>s+totFor(u.id,d),0));
+  const famTotal=famDaily.reduce((s,v)=>s+v,0);
+
+  document.getElementById('famAmt').textContent=fmt(famTotal);
+  const s=dates[0],e=dates[6];
+  document.getElementById('famRange').textContent=
+    new Date(s+'T00:00').toLocaleDateString([],{month:'short',day:'numeric'})+' – '+
+    new Date(e+'T00:00').toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});
+
+  const labels=dates.map(d=>['S','M','T','W','T','F','S'][new Date(d+'T00:00').getDay()]);
+  const todayIdx=dates.indexOf(today());
+  const famColors=famDaily.map((_,i)=>i===todayIdx?'#0071e3':'#c7c7cc');
+  setTimeout(()=>drawChart('famChart',labels,famDaily,famColors,todayIdx),50);
+
+  // Member breakdown
+  const mTotals=USERS.map(u=>({u,t:weekTot(u.id)}));
+  const maxM=Math.max(...mTotals.map(m=>m.t),1);
+  document.getElementById('memberList').innerHTML=mTotals.map(({u,t})=>{
+    const cnt=weekE(u.id).length;
+    return `<div class="member-row">
+      <div class="m-avatar" style="background:${u.color}20">${u.emoji}</div>
+      <div class="m-info">
+        <div class="m-name">${u.name}</div>
+        <div class="m-sub">${cnt} transaction${cnt!==1?'s':''} this week</div>
+      </div>
+      <div class="m-bar-wrap">
+        <div class="m-bar-track">
+          <div class="m-bar-fill" style="width:${(t/maxM*100).toFixed(0)}%;background:${u.color}"></div>
+        </div>
+      </div>
+      <div class="m-amt" style="color:${u.color}">${t>0?fmt(t):'—'}</div>
+    </div>`;
+  }).join('');
+
+  // Combined categories
+  const allCt={}, allColors={};
+  USERS.forEach(u=>{
+    weekE(u.id).forEach(e=>{
+      allCt[e.category]=(allCt[e.category]||0)+e.amount;
+      const cat=CATS[u.id].find(c=>c.id===e.category);
+      if(cat) allColors[e.category]=cat.color;
+    });
+  });
+  document.getElementById('famCatBars').innerHTML=Object.keys(allCt).length>0?
+    Object.entries(allCt).sort((a,b)=>b[1]-a[1]).map(([id,amt])=>{
+      const color=allColors[id]||'#8e8e93';
+      const pct=famTotal>0?(amt/famTotal*100):0;
+      return `<div class="bar-item">
+        <div class="bar-row"><span class="bar-name">${id.charAt(0).toUpperCase()+id.slice(1)}</span><span class="bar-val">${fmt(amt)}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="bar-pct">${pct.toFixed(0)}% of family spending</div></div>`;
+    }).join('')
+    :'<div class="empty" style="padding:24px"><div class="empty-text">No family data this week</div></div>';
+}
+
+// ══════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════
+function renderSettings(){
+  if(!CU) return;
+  const t=ud().entries.reduce((s,e)=>s+e.amount,0);
+  const d=new Set(ud().entries.map(e=>e.date)).size;
+  document.getElementById('statsInfo').textContent=
+    `${ud().entries.length} entries · ${fmt(t)} · ${d} days tracked`;
+}
+
+function exportMyData(){
+  dl(JSON.stringify({user:CU.id,name:CU.name,...ud()},null,2),'spending-data.json');
+  toast('✅ Exported → move to Claude Outputs folder',3000);
+}
+function exportFamilyData(){
+  const data={version:2,exportedAt:new Date().toISOString(),users:{}};
+  USERS.forEach(u=>{data.users[u.id]={name:u.name,role:u.role,...ALL[u.id]};});
+  dl(JSON.stringify(data,null,2),'family-spending-data.json');
+  toast('✅ Family data exported!',2500);
+}
+function dl(text,name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));
+  a.download=name; a.click();
+}
+function importData(){ document.getElementById('fileInput').click(); }
+function handleImport(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.entries&&Array.isArray(d.entries)){
+        ALL[CU.id]=d; save(CU.id);
+        toast('✅ Imported — '+d.entries.length+' entries'); refreshHeader();
+      } else if(d.version===2&&d.users){
+        USERS.forEach(u=>{ if(d.users[u.id]){
+          const {name,role,...rest}=d.users[u.id];
+          ALL[u.id]=rest; save(u.id);
+        }});
+        toast('✅ Family data imported!',2500); refreshHeader();
+      } else toast('⚠️ Invalid file format');
+    } catch(err){ toast('⚠️ Could not read file'); }
+  };
+  r.readAsText(f); ev.target.value='';
+}
+function copyClipboard(){
+  navigator.clipboard.writeText(JSON.stringify(ud(),null,2))
+    .then(()=>toast('📋 Copied!'))
+    .catch(()=>toast('⚠️ Clipboard not available'));
+}
+function confirmClear(){
+  showSheet('Delete ALL your entries? Cannot be undone.',
+    [{l:'🗑️ Delete My Data',cls:'red',fn:'clearData'}]);
+}
+function clearData(){
+  ALL[CU.id]={entries:[]}; save(CU.id);
+  closeSheet(); toast('Data cleared'); refreshHeader(); renderSettings();
+  if(document.getElementById('screen-today').classList.contains('active')) renderToday();
+}
+
+// ══════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelector('.content').scrollTop=0;
+  if(name==='today') renderToday();
+  if(name==='week') renderWeek();
+  if(name==='family') renderFamily();
+  if(name==='settings') renderSettings();
+}
+
+// ══════════════════════════════════════════════
+// ACTION SHEET
+// ══════════════════════════════════════════════
+function showSheet(title,btns){
+  document.getElementById('asTitle').textContent=title;
+  document.getElementById('asBtns').innerHTML=btns.map(b=>
+    `<button class="as-btn ${b.cls||''}" onclick="${b.fn}()">${b.l}</button>`
+  ).join('');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeSheet(){ document.getElementById('overlay').classList.remove('show'); }
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+function init(){
+  loadAll();
+  buildPicker();
+  document.getElementById('hDate').textContent=
+    new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('amtInput').addEventListener('input',updateBtn);
+
+  const saved=localStorage.getItem('sp_cur');
+  if(saved&&USERS.find(u=>u.id===saved)) selectUser(saved);
+}
+
+// ══════════════════════════════════════════════
+// SERVICE WORKER (offline fix — no CDN)
+// ══════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js',{scope:'./'})
+      .then(reg=>{
+        reg.addEventListener('updatefound',()=>{
+          reg.installing.addEventListener('statechange',function(){
+            if(this.state==='activated'){
+              const b=document.getElementById('offlineBadge');
+              b.classList.add('show');
+              setTimeout(()=>b.classList.remove('show'),3000);
+            }
+          });
+        });
+        // If already active SW, show badge briefly on first load
+        if(reg.active){
+          setTimeout(()=>{
+            const b=document.getElementById('offlineBadge');
+            b.classList.add('show');
+            setTimeout(()=>b.classList.remove('show'),2000);
+          },1000);
+        }
+      })
+      .catch(err=>console.warn('[PWA] SW:',err));
+  });
+}
+
+init();
+</script>
+</body>
+</html>
