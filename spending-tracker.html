@@ -519,6 +519,22 @@ canvas{display:block;width:100%;}
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+// ── FIREBASE INIT ──────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAWLmHEZ5amdOJt8Zrfy3wTGoXSNU90rUY",
+  authDomain: "family-tracker-16c8e.firebaseapp.com",
+  databaseURL: "https://family-tracker-16c8e-default-rtdb.firebaseio.com",
+  projectId: "family-tracker-16c8e",
+  storageBucket: "family-tracker-16c8e.firebasestorage.app",
+  messagingSenderId: "591737230651",
+  appId: "1:591737230651:web:83c80a566fe11cc9f3931e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
 <script>
 // ══════════════════════════════════════════════
 // CONFIG
@@ -593,15 +609,44 @@ let selCat = null;
 let delTarget = null;
 
 // ══════════════════════════════════════════════
-// STORAGE
+// STORAGE — Firebase Realtime Database
 // ══════════════════════════════════════════════
 function loadAll(){
-  USERS.forEach(u=>{
-    try { ALL[u.id] = JSON.parse(localStorage.getItem('sp_'+u.id)||'{"entries":[]}'); }
-    catch(e){ ALL[u.id]={entries:[]}; }
+  // Initialize with empty — Firebase listener will populate
+  USERS.forEach(u=>{ ALL[u.id]={entries:[]}; });
+}
+function save(uid){
+  db.ref('/users/'+uid).set(ALL[uid]).catch(err=>{
+    // Fallback to localStorage if offline
+    try { localStorage.setItem('sp_'+uid, JSON.stringify(ALL[uid])); } catch(e){}
   });
 }
-function save(uid){ localStorage.setItem('sp_'+uid, JSON.stringify(ALL[uid])); }
+function setupFirebaseSync(){
+  db.ref('/users').on('value', snapshot=>{
+    const data = snapshot.val()||{};
+    USERS.forEach(u=>{
+      ALL[u.id] = data[u.id] && data[u.id].entries ? data[u.id] : {entries:[]};
+    });
+    // Re-render active screen after sync
+    if(CU){
+      refreshHeader();
+      const active=document.querySelector('.screen.active');
+      if(active){
+        const id=active.id;
+        if(id==='screen-today') renderToday();
+        else if(id==='screen-week') renderWeek();
+        else if(id==='screen-family') renderFamily();
+        else if(id==='screen-settings') renderSettings();
+      }
+    }
+  }, err=>{
+    console.warn('[Firebase] Sync error, using localStorage fallback:', err);
+    USERS.forEach(u=>{
+      try { ALL[u.id]=JSON.parse(localStorage.getItem('sp_'+u.id)||'{"entries":[]}'); }
+      catch(e){ ALL[u.id]={entries:[]}; }
+    });
+  });
+}
 function ud(){ return ALL[CU.id]; }
 function cats(){ return CATS[CU.id]; }
 function cm(){ return Object.fromEntries(cats().map(c=>[c.id,c])); }
@@ -1063,6 +1108,7 @@ function closeSheet(){ document.getElementById('overlay').classList.remove('show
 // ══════════════════════════════════════════════
 function init(){
   loadAll();
+  setupFirebaseSync();
   buildPicker();
   document.getElementById('hDate').textContent=
     new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});

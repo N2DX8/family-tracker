@@ -3,7 +3,7 @@
 // Fully offline — no CDN dependencies
 // ─────────────────────────────────────────────
 
-const CACHE = 'family-tracker-v2';
+const CACHE = 'family-tracker-v3';
 
 // Everything the app needs — all local, no CDN
 const PRECACHE = [
