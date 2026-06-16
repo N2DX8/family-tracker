@@ -10,6 +10,8 @@
 <link rel="apple-touch-icon" href="icon-192.png"/>
 <meta name="theme-color" content="#007aff"/>
 <title>Family Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -277,6 +279,125 @@ canvas{display:block;width:100%;}
 .as-btn.red{color:#ff3b30;}
 .as-btn.cancel{font-weight:700;margin-top:8px;border:none;border-radius:14px;}
 .as-btn:active{background:#f2f2f7;}
+
+/* ── IBADAH SEGMENT ──────────────────────── */
+.ibadah-seg{display:flex;background:var(--card);border-radius:10px;padding:3px;gap:3px;margin-bottom:12px;}
+.ibadah-seg-btn{flex:1;padding:9px;border:none;border-radius:8px;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:inherit;background:transparent;color:var(--sub);transition:all .2s;}
+.ibadah-seg-btn.active{background:#fff;color:var(--text);box-shadow:0 1px 5px rgba(0,0,0,.12);}
+
+/* ── PRAYER HERO ─────────────────────────── */
+.prayer-hero{
+  background:linear-gradient(135deg,#0a2a10,#1b5e20);
+  border-radius:var(--radius);padding:24px 20px 20px;margin-bottom:12px;
+  color:#fff;text-align:center;
+}
+.ph-loc{font-size:12px;opacity:.65;margin-bottom:10px;}
+.ph-next-lbl{font-size:10px;opacity:.55;text-transform:uppercase;letter-spacing:.8px;}
+.ph-next-name{font-size:26px;font-weight:800;margin:4px 0 1px;}
+.ph-next-ar{font-size:15px;opacity:.72;margin-bottom:8px;
+  font-family:'Amiri','Noto Naskh Arabic','Traditional Arabic',serif;}
+.ph-countdown{font-size:48px;font-weight:700;letter-spacing:-2px;
+  font-variant-numeric:tabular-nums;line-height:1;}
+.ph-countdown-sub{font-size:12px;opacity:.6;margin-top:5px;}
+
+/* ── PRAYER LIST ROWS ───────────────────── */
+.prayer-row{display:flex;align-items:center;padding:13px 16px;border-bottom:.5px solid #f2f2f7;}
+.prayer-row:last-child{border-bottom:none;}
+.prayer-row.is-next{background:rgba(52,199,89,.06);}
+.pr-badge{width:24px;height:24px;border-radius:50%;background:#f2f2f7;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--sub);margin-right:12px;flex-shrink:0;}
+.pr-badge.done{background:#34c759;color:#fff;}
+.pr-badge.next-b{background:#007aff;color:#fff;}
+.pr-info{flex:1;}
+.pr-name{font-size:15px;font-weight:600;}
+.pr-ar{font-size:12px;color:var(--sub);
+  font-family:'Amiri','Noto Naskh Arabic','Traditional Arabic',serif;}
+.pr-time{font-size:15px;font-weight:600;color:var(--sub);min-width:58px;text-align:right;margin-right:12px;}
+.pr-check{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-size:16px;transition:all .18s;flex-shrink:0;background:transparent;}
+.pr-check.done{background:#34c759;border-color:#34c759;color:#fff;}
+
+/* ── FAMILY PRAYER GRID ─────────────────── */
+.fpm-row{display:flex;align-items:center;padding:10px 16px;border-bottom:.5px solid #f2f2f7;}
+.fpm-row:last-child{border-bottom:none;}
+.fpm-av{font-size:18px;margin-right:10px;}
+.fpm-name{font-size:13px;font-weight:600;min-width:52px;}
+.fpm-dots{display:flex;gap:5px;flex:1;}
+.fpm-dot{width:28px;height:28px;border-radius:50%;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--border);color:var(--sub);background:#f9f9f9;}
+.fpm-dot.done{background:#34c759;border-color:#34c759;color:#fff;}
+
+/* ── QURAN HERO ──────────────────────────── */
+.quran-hero{
+  background:linear-gradient(135deg,#1a0a44,#3b1fa8);
+  border-radius:var(--radius);padding:18px;margin-bottom:12px;
+  color:#fff;display:flex;gap:12px;align-items:stretch;
+}
+.qh-streak{flex:1;background:rgba(255,255,255,.12);border-radius:10px;
+  padding:14px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.qh-streak-icon{font-size:28px;line-height:1;margin-bottom:3px;}
+.qh-streak-num{font-size:32px;font-weight:800;letter-spacing:-1px;}
+.qh-streak-lbl{font-size:9px;opacity:.7;text-transform:uppercase;letter-spacing:.6px;margin-top:1px;}
+.qh-right{flex:2;display:flex;flex-direction:column;justify-content:center;}
+.qh-page-lbl{font-size:10px;opacity:.65;margin-bottom:2px;}
+.qh-page-val{font-size:28px;font-weight:800;letter-spacing:-1px;}
+.qh-pbar-wrap{height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:8px 0 3px;}
+.qh-pbar{height:100%;background:#34c759;border-radius:2px;transition:width .5s;}
+.qh-pct{font-size:10px;opacity:.6;}
+
+/* ── QURAN CONTROLS ─────────────────────── */
+.quran-controls{display:flex;align-items:center;background:var(--card);
+  border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;gap:10px;}
+.qc-btn{background:none;border:1.5px solid var(--border);border-radius:8px;
+  padding:8px 16px;font-size:15px;font-weight:600;cursor:pointer;
+  font-family:inherit;color:var(--text);transition:transform .12s;flex-shrink:0;}
+.qc-btn:active{transform:scale(.93);}
+.qc-btn:disabled{opacity:.3;cursor:default;}
+.qc-mid{flex:1;text-align:center;}
+.qc-input{width:56px;border:none;outline:none;font-size:19px;font-weight:700;
+  text-align:center;background:transparent;font-family:inherit;
+  border-bottom:2px solid var(--border);}
+.qc-of{font-size:10px;color:var(--sub);margin-top:2px;}
+
+/* ── QURAN MARK BUTTON ──────────────────── */
+.quran-mark-btn{width:100%;border:none;border-radius:var(--radius);
+  padding:15px;font-size:16px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:transform .12s;margin-bottom:10px;}
+.quran-mark-btn:active{transform:scale(.97);}
+.qmb-unread{background:#34c759;color:#fff;}
+.qmb-read{background:rgba(52,199,89,.12);color:#34c759;border:1.5px solid #34c759;}
+
+/* ── QURAN PAGE CARD ────────────────────── */
+.quran-page-card{background:var(--card);border-radius:var(--radius);padding:22px 18px;min-height:320px;}
+.quran-arabic{font-family:'Amiri','Noto Naskh Arabic','Traditional Arabic',
+  'Scheherazade New','Simplified Arabic',serif;
+  font-size:23px;line-height:2.3;direction:rtl;text-align:justify;
+  color:#1a1a2e;word-spacing:5px;}
+.quran-footer{text-align:center;padding-top:12px;margin-top:12px;
+  border-top:.5px solid #f2f2f7;font-size:11px;color:var(--sub);}
+.quran-load{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:260px;gap:14px;color:var(--sub);}
+.ql-spin{width:32px;height:32px;border:3px solid #f2f2f7;
+  border-top-color:#5856d6;border-radius:50%;animation:qlspin .7s linear infinite;}
+@keyframes qlspin{to{transform:rotate(360deg);}}
+
+/* ── STREAK POPUP ───────────────────────── */
+.streak-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;
+  display:none;align-items:center;justify-content:center;}
+.streak-overlay.show{display:flex;}
+.streak-card{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;
+  max-width:290px;width:88%;animation:popIn .32s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes popIn{from{transform:scale(.45);opacity:0;}to{transform:scale(1);opacity:1;}}
+.sc-emoji{font-size:68px;line-height:1;display:block;margin-bottom:12px;}
+.sc-title{font-size:26px;font-weight:800;margin-bottom:6px;}
+.sc-sub{font-size:15px;color:var(--sub);margin-bottom:22px;line-height:1.4;}
+.sc-btn{background:var(--user);color:#fff;border:none;border-radius:14px;
+  padding:13px 36px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
+
 </style>
 </head>
 <body>
@@ -487,6 +608,78 @@ canvas{display:block;width:100%;}
     <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)"/>
   </div>
 
+  <!-- IBADAH -->
+  <div class="screen" id="screen-ibadah">
+    <div class="ibadah-seg">
+      <button class="ibadah-seg-btn active" id="seg-solat" onclick="switchIbadah('solat')">🕌 Solat</button>
+      <button class="ibadah-seg-btn" id="seg-quran" onclick="switchIbadah('quran')">📖 Al-Quran</button>
+    </div>
+
+    <!-- ── SOLAT SECTION ── -->
+    <div id="solatSection">
+      <div class="prayer-hero">
+        <div class="ph-loc" id="prayerLoc">📍 Getting location…</div>
+        <div class="ph-next-lbl">Next Prayer</div>
+        <div class="ph-next-name" id="nextPrayerName">—</div>
+        <div class="ph-next-ar" id="nextPrayerAr"></div>
+        <div class="ph-countdown" id="prayerCountdown">--:--:--</div>
+        <div class="ph-countdown-sub" id="prayerCountdownSub">Loading prayer times…</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Waktu Solat Hari Ini</span>
+          <span id="prayerDoneCount" style="font-size:12px;color:#34c759;font-weight:600"></span>
+        </div>
+        <div id="prayerList"><div class="empty"><div class="empty-icon">🕌</div><div class="empty-text">Fetching prayer times…</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Family Prayer Tracker</span></div>
+        <div id="familyPrayerGrid"></div>
+      </div>
+    </div>
+
+    <!-- ── QURAN SECTION ── -->
+    <div id="quranSection" style="display:none">
+      <div class="quran-hero">
+        <div class="qh-streak">
+          <div class="qh-streak-icon">🔥</div>
+          <div class="qh-streak-num" id="quranStreakNum">0</div>
+          <div class="qh-streak-lbl">Day Streak</div>
+        </div>
+        <div class="qh-right">
+          <div class="qh-page-lbl">Current Page</div>
+          <div class="qh-page-val" id="quranCurPageVal">1 / 604</div>
+          <div class="qh-pbar-wrap"><div class="qh-pbar" id="quranPBar" style="width:0%"></div></div>
+          <div class="qh-pct" id="quranPct">0% complete · 0 pages read</div>
+        </div>
+      </div>
+
+      <div class="quran-controls">
+        <button class="qc-btn" id="qPrev" onclick="qChangePage(-1)">‹ Prev</button>
+        <div class="qc-mid">
+          <input class="qc-input" type="number" id="qPageIn" min="1" max="604" value="1"
+            onchange="qGoTo(+this.value)"/>
+          <div class="qc-of">of 604 pages</div>
+        </div>
+        <button class="qc-btn" id="qNext" onclick="qChangePage(+1)">Next ›</button>
+      </div>
+
+      <button class="quran-mark-btn qmb-unread" id="quranMarkBtn" onclick="markQuranRead()">
+        ✅ Mark as Read (Maqra)
+      </button>
+
+      <div class="quran-page-card" id="quranPageCard">
+        <div class="quran-load" id="quranLoad">
+          <div class="ql-spin"></div>
+          <div>Loading Al-Quran…</div>
+        </div>
+        <div class="quran-arabic" id="quranArabic" style="display:none"></div>
+        <div class="quran-footer" id="quranFooter" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <!-- TAB BAR -->
@@ -503,7 +696,10 @@ canvas{display:block;width:100%;}
   <div class="tab" onclick="go('family')" id="tab-family">
     <span class="tab-icon">👨‍👩‍👧‍👦</span><span class="tab-label">Family</span>
   </div>
-  <div class="tab" onclick="go('settings')" id="tab-settings">
+  <div class="tab" onclick="go('ibadah')" id="tab-ibadah">
+    <span class="tab-icon">🕌</span><span class="tab-label">Ibadah</span>
+  </div>
+    <div class="tab" onclick="go('settings')" id="tab-settings">
     <span class="tab-icon">⚙️</span><span class="tab-label">Settings</span>
   </div>
 </div>
@@ -516,6 +712,16 @@ canvas{display:block;width:100%;}
     <div class="as-title" id="asTitle"></div>
     <div id="asBtns"></div>
     <button class="as-btn cancel" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- STREAK POPUP -->
+<div class="streak-overlay" id="streakOverlay" onclick="closeStreakPopup()">
+  <div class="streak-card" onclick="event.stopPropagation()">
+    <span class="sc-emoji" id="scEmoji">🔥</span>
+    <div class="sc-title" id="scTitle">Streak!</div>
+    <div class="sc-sub" id="scSub"></div>
+    <button class="sc-btn" onclick="closeStreakPopup()">Alhamdulillah! 🤲</button>
   </div>
 </div>
 
@@ -637,6 +843,7 @@ function setupFirebaseSync(){
         else if(id==='screen-week') renderWeek();
         else if(id==='screen-family') renderFamily();
         else if(id==='screen-settings') renderSettings();
+        else if(id==='screen-ibadah'){ if(_ibadabTab==='solat') renderPrayerList(); else _updateQuranHero(); }
       }
     }
   }, err=>{
@@ -1076,6 +1283,347 @@ function clearData(){
   if(document.getElementById('screen-today').classList.contains('active')) renderToday();
 }
 
+
+// ══════════════════════════════════════════════
+// IBADAH — STATE
+// ══════════════════════════════════════════════
+let PRAYER_DATA  = {};   // { uid: { 'YYYY-MM-DD': { subuh:bool, ... } } }
+let QURAN_DATA   = {};   // { uid: { currentPage, streak, lastReadDate, todayRead, totalPagesRead } }
+let PRAYER_TIMES = null; // fetched Aladhan data object
+let _cdInterval  = null; // countdown interval
+let _ibadabTab   = 'solat';
+let _qPage       = 1;    // current displayed Quran page
+const _qCache    = {};   // { pageNum: { text, surahInfo, juz } }
+
+const PRAYERS = [
+  { key:'subuh',   api:'Fajr',    name:'Subuh',   ar:'الفجر',   emoji:'🌙' },
+  { key:'zuhur',   api:'Dhuhr',   name:'Zuhur',   ar:'الظهر',   emoji:'☀️' },
+  { key:'asar',    api:'Asr',     name:'Asar',    ar:'العصر',   emoji:'🌤️' },
+  { key:'maghrib', api:'Maghrib', name:'Maghrib', ar:'المغرب',  emoji:'🌅' },
+  { key:'isyak',   api:'Isha',    name:'Isyak',   ar:'العشاء',  emoji:'🌟' },
+];
+const PRAYER_SHORT = ['S','Z','A','M','I'];
+
+// ── SEGMENT SWITCH ────────────────────────────
+function switchIbadah(tab){
+  _ibadabTab = tab;
+  document.getElementById('solatSection').style.display = tab==='solat'?'':'none';
+  document.getElementById('quranSection').style.display = tab==='quran'?'':'none';
+  document.getElementById('seg-solat').classList.toggle('active', tab==='solat');
+  document.getElementById('seg-quran').classList.toggle('active', tab==='quran');
+  if(tab==='solat') renderSolat();
+  else renderQuranScreen();
+}
+
+// ══════════════════════════════════════════════
+// PRAYER TIMES
+// ══════════════════════════════════════════════
+function _t2m(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function _m2disp(m){
+  const h=Math.floor(m/60), mn=m%60, ampm=h>=12?'PM':'AM';
+  const dh=h>12?h-12:(h===0?12:h);
+  return `${dh}:${String(mn).padStart(2,'0')} ${ampm}`;
+}
+
+function _getNextPrayer(){
+  if(!PRAYER_TIMES) return null;
+  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+  for(const p of PRAYERS){
+    const pm=_t2m(PRAYER_TIMES.timings[p.api]);
+    if(pm>nm) return {...p, timeMins:pm};
+  }
+  // all done — tomorrow's Subuh
+  return {...PRAYERS[0], timeMins:_t2m(PRAYER_TIMES.timings['Fajr'])+1440, tomorrow:true};
+}
+
+function _updateCountdown(){
+  const next=_getNextPrayer(); if(!next) return;
+  const now=new Date();
+  const nowSec=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
+  const nextSec=next.timeMins*60;
+  let diff=nextSec-nowSec;
+  if(diff<0) diff+=86400;
+  const hh=Math.floor(diff/3600), mm=Math.floor((diff%3600)/60), ss=diff%60;
+  document.getElementById('nextPrayerName').textContent=`${next.emoji} ${next.name}`;
+  document.getElementById('nextPrayerAr').textContent=next.ar;
+  document.getElementById('prayerCountdown').textContent=
+    `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  document.getElementById('prayerCountdownSub').textContent=
+    next.tomorrow?'Esok pagi (Tomorrow)':'at '+_m2disp(next.timeMins%1440);
+}
+
+async function _fetchPrayerTimes(lat,lng){
+  const ts=Math.floor(Date.now()/1000);
+  const url=`https://api.aladhan.com/v1/timings/${ts}?latitude=${lat}&longitude=${lng}&method=17`;
+  try{
+    const r=await fetch(url, {signal:AbortSignal.timeout?AbortSignal.timeout(8000):undefined});
+    const d=await r.json();
+    if(d.code===200) return d.data;
+  }catch(e){ console.warn('[Prayer] API err',e); }
+  return null;
+}
+
+async function _getLocation(){
+  return new Promise(resolve=>{
+    if(!navigator.geolocation){ resolve({lat:3.0738,lng:101.5183,city:'Shah Alam, Selangor'}); return; }
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const lat=pos.coords.latitude, lng=pos.coords.longitude;
+      let city=`${lat.toFixed(2)}°N, ${lng.toFixed(2)}°E`;
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const d=await r.json();
+        city=d.address?.city||d.address?.town||d.address?.suburb||d.address?.county||city;
+      }catch(e){}
+      resolve({lat,lng,city});
+    }, ()=>resolve({lat:3.0738,lng:101.5183,city:'Shah Alam, Selangor'}),
+    {timeout:8000});
+  });
+}
+
+async function initPrayerTimes(){
+  document.getElementById('prayerLoc').textContent='📍 Getting location…';
+  const {lat,lng,city}=await _getLocation();
+  document.getElementById('prayerLoc').textContent=`📍 ${city}`;
+  const data=await _fetchPrayerTimes(lat,lng);
+  if(data){
+    PRAYER_TIMES=data;
+    renderPrayerList();
+    if(_cdInterval) clearInterval(_cdInterval);
+    _updateCountdown();
+    _cdInterval=setInterval(_updateCountdown,1000);
+  } else {
+    document.getElementById('prayerCountdown').textContent='Offline';
+    document.getElementById('nextPrayerName').textContent='No internet';
+    document.getElementById('prayerList').innerHTML=
+      '<div class="empty"><div class="empty-icon">📵</div><div class="empty-text">No internet connection</div><div class="empty-sub">Prayer times need internet once per day</div></div>';
+  }
+}
+
+function renderPrayerList(){
+  if(!PRAYER_TIMES||!CU) return;
+  const td=today(), myP=(PRAYER_DATA[CU.id]||{})[td]||{};
+  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+  const next=_getNextPrayer();
+  let done=0;
+
+  document.getElementById('prayerList').innerHTML=PRAYERS.map((p,i)=>{
+    const pm=_t2m(PRAYER_TIMES.timings[p.api]);
+    const isDone=myP[p.key]===true, isNext=next&&next.key===p.key&&!next.tomorrow;
+    if(isDone) done++;
+    return `<div class="prayer-row${isNext?' is-next':''}">
+      <div class="pr-badge ${isDone?'done':isNext?'next-b':''}">${isDone?'✓':isNext?'▸':(i+1)}</div>
+      <div class="pr-info">
+        <div class="pr-name">${p.emoji} ${p.name}</div>
+        <div class="pr-ar">${p.ar}</div>
+      </div>
+      <div class="pr-time">${_m2disp(pm)}</div>
+      <div class="pr-check ${isDone?'done':''}" onclick="togglePrayer('${p.key}')">${isDone?'✓':''}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('prayerDoneCount').textContent=done>0?`${done}/5 ✅`:'';
+  renderFamilyPrayer();
+}
+
+function renderFamilyPrayer(){
+  const td=today();
+  document.getElementById('familyPrayerGrid').innerHTML=USERS.map(u=>{
+    const uP=(PRAYER_DATA[u.id]||{})[td]||{};
+    const dots=PRAYERS.map((p,i)=>{
+      const d=uP[p.key]===true;
+      return `<div class="fpm-dot ${d?'done':''}">${PRAYER_SHORT[i]}</div>`;
+    }).join('');
+    return `<div class="fpm-row">
+      <div class="fpm-av">${u.emoji}</div>
+      <div class="fpm-name">${u.name}</div>
+      <div class="fpm-dots">${dots}</div>
+    </div>`;
+  }).join('');
+}
+
+function togglePrayer(key){
+  if(!CU) return;
+  const td=today();
+  if(!PRAYER_DATA[CU.id]) PRAYER_DATA[CU.id]={};
+  if(!PRAYER_DATA[CU.id][td]) PRAYER_DATA[CU.id][td]={};
+  const was=PRAYER_DATA[CU.id][td][key]===true;
+  PRAYER_DATA[CU.id][td][key]=!was;
+  db.ref(`/prayerData/${CU.id}/${td}/${key}`).set(!was).catch(()=>{
+    try{ localStorage.setItem('pd_'+CU.id, JSON.stringify(PRAYER_DATA[CU.id])); }catch(e){}
+  });
+  renderPrayerList();
+  const p=PRAYERS.find(x=>x.key===key);
+  if(!was) toast(`🕌 ${p.name} ✅`);
+}
+
+async function renderSolat(){
+  if(!CU) return;
+  if(!PRAYER_TIMES) await initPrayerTimes();
+  else { renderPrayerList(); if(!_cdInterval){ _updateCountdown(); _cdInterval=setInterval(_updateCountdown,1000); } }
+}
+
+function setupPrayerSync(){
+  db.ref('/prayerData').on('value', snap=>{
+    PRAYER_DATA=snap.val()||{};
+    if(document.getElementById('screen-ibadah').classList.contains('active')&&_ibadabTab==='solat')
+      renderPrayerList();
+  }, ()=>{
+    USERS.forEach(u=>{ try{ PRAYER_DATA[u.id]=JSON.parse(localStorage.getItem('pd_'+u.id)||'{}'); }catch(e){} });
+  });
+}
+
+// ══════════════════════════════════════════════
+// QURAN READER
+// ══════════════════════════════════════════════
+function _getQD(uid){ return QURAN_DATA[uid]||{currentPage:1,streak:0,lastReadDate:null,todayRead:false,totalPagesRead:0}; }
+
+function _toArabicNum(n){
+  return String(n).replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+}
+
+async function _loadQPage(pg){
+  if(_qCache[pg]) return _qCache[pg];
+  try{
+    const r=await fetch(`https://api.alquran.cloud/v1/page/${pg}/quran-uthmani`);
+    const d=await r.json();
+    if(d.code===200&&d.data&&d.data.ayahs){
+      let text=''; let prevSurah=-1, juz=d.data.ayahs[0]?.juz||1;
+      let surahInfo=d.data.ayahs[0]?.surah?.englishName||'';
+      d.data.ayahs.forEach(ay=>{
+        const sn=ay.surah?.number;
+        if(sn!==prevSurah){
+          prevSurah=sn;
+          surahInfo=ay.surah?.englishName||surahInfo;
+          text+=`<div style="text-align:center;color:#5856d6;font-size:14px;font-weight:600;margin:10px 0 4px;font-family:inherit;">${ay.surah?.englishName||''} — سورة ${ay.surah?.name||''}</div>`;
+          if(ay.numberInSurah===1&&sn!==1&&sn!==9)
+            text+=`<div style="text-align:center;font-size:19px;margin:6px 0 10px;opacity:.75;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+        }
+        text+=`${ay.text} ﴿${_toArabicNum(ay.numberInSurah)}﴾ `;
+      });
+      _qCache[pg]={text,surahInfo,juz};
+      return _qCache[pg];
+    }
+  }catch(e){ console.warn('[Quran] API err',e); }
+  return null;
+}
+
+async function _displayQPage(pg){
+  const load=document.getElementById('quranLoad');
+  const arabic=document.getElementById('quranArabic');
+  const footer=document.getElementById('quranFooter');
+  load.style.display='flex'; arabic.style.display='none'; footer.style.display='none';
+  const data=await _loadQPage(pg);
+  load.style.display='none';
+  if(data){
+    arabic.innerHTML=data.text; arabic.style.display='';
+    footer.textContent=`Page ${pg} · Juz ${data.juz} · ${data.surahInfo}`;
+    footer.style.display='';
+  } else {
+    arabic.innerHTML='<div style="text-align:center;padding:40px 0;color:#8e8e93;">Could not load page.<br/>Please check your internet.</div>';
+    arabic.style.display='';
+  }
+}
+
+function _updateQuranHero(){
+  if(!CU) return;
+  const qd=_getQD(CU.id);
+  const pg=qd.currentPage||1, streak=qd.streak||0, total=qd.totalPagesRead||0;
+  const pct=((pg-1)/603*100).toFixed(1);
+  document.getElementById('quranStreakNum').textContent=streak;
+  document.getElementById('quranCurPageVal').textContent=`${pg} / 604`;
+  document.getElementById('quranPBar').style.width=pct+'%';
+  document.getElementById('quranPct').textContent=`${pct}% complete · ${total} pages read`;
+  const btn=document.getElementById('quranMarkBtn');
+  const td=today(), read=qd.lastReadDate===td&&qd.todayRead;
+  btn.textContent=read?'✅ Already Read Today':'✅ Mark as Read (Maqra)';
+  btn.className='quran-mark-btn '+(read?'qmb-read':'qmb-unread');
+  document.getElementById('qPageIn').value=pg;
+  document.getElementById('qPrev').disabled=pg<=1;
+  document.getElementById('qNext').disabled=pg>=604;
+  _qPage=pg;
+}
+
+async function renderQuranScreen(){
+  if(!CU) return;
+  _updateQuranHero();
+  await _displayQPage(_qPage);
+}
+
+async function qChangePage(dir){
+  const np=_qPage+dir;
+  if(np<1||np>604) return;
+  _qPage=np;
+  document.getElementById('qPageIn').value=np;
+  document.getElementById('qPrev').disabled=np<=1;
+  document.getElementById('qNext').disabled=np>=604;
+  document.getElementById('quranCurPageVal').textContent=`${np} / 604`;
+  const pct=((np-1)/603*100).toFixed(1);
+  document.getElementById('quranPBar').style.width=pct+'%';
+  document.getElementById('quranPct').textContent=`${pct}% complete · ${(_getQD(CU.id).totalPagesRead||0)} pages read`;
+  if(CU) db.ref(`/quranData/${CU.id}/currentPage`).set(np).catch(()=>{});
+  const td=today(), qd=_getQD(CU.id), read=qd.lastReadDate===td&&qd.todayRead;
+  const btn=document.getElementById('quranMarkBtn');
+  btn.textContent=read?'✅ Already Read Today':'✅ Mark as Read (Maqra)';
+  btn.className='quran-mark-btn '+(read?'qmb-read':'qmb-unread');
+  await _displayQPage(np);
+}
+
+async function qGoTo(pg){
+  pg=Math.max(1,Math.min(604,parseInt(pg)||1));
+  _qPage=pg;
+  document.getElementById('qPageIn').value=pg;
+  document.getElementById('qPrev').disabled=pg<=1;
+  document.getElementById('qNext').disabled=pg>=604;
+  if(CU) db.ref(`/quranData/${CU.id}/currentPage`).set(pg).catch(()=>{});
+  await _displayQPage(pg);
+}
+
+async function markQuranRead(){
+  if(!CU) return;
+  const td=today(), qd=_getQD(CU.id);
+  if(qd.lastReadDate===td&&qd.todayRead){ toast('📖 Already marked for today!'); return; }
+  const yd=new Date(); yd.setDate(yd.getDate()-1);
+  const ydStr=yd.toISOString().slice(0,10);
+  const newStreak=(qd.lastReadDate===ydStr||qd.lastReadDate===td)?(qd.streak||0)+1:1;
+  const update={
+    currentPage:_qPage, streak:newStreak, lastReadDate:td, todayRead:true,
+    totalPagesRead:(qd.totalPagesRead||0)+1
+  };
+  QURAN_DATA[CU.id]=update;
+  db.ref(`/quranData/${CU.id}`).set(update).catch(()=>{
+    try{ localStorage.setItem('qd_'+CU.id,JSON.stringify(update)); }catch(e){}
+  });
+  _updateQuranHero();
+  showStreakPopup(newStreak);
+}
+
+function showStreakPopup(streak){
+  let emoji,title,sub;
+  if(streak>=100){ emoji='🏆'; title=`${streak} Day Streak!`; sub='MashaAllah! 100 days of Quran!'; }
+  else if(streak>=30){ emoji='🌟'; title=`${streak} Day Streak!`; sub='SubhanAllah! A full month!'; }
+  else if(streak>=7){ emoji='🔥'; title=`${streak} Day Streak!`; sub='AlhamdulIllah! Keep it going!'; }
+  else if(streak>=3){ emoji='⭐'; title=`${streak} Day Streak!`; sub='Going strong — stay consistent!'; }
+  else { emoji='📖'; title='Jazakallah Khair!'; sub='Day 1 — your streak begins!'; }
+  document.getElementById('scEmoji').textContent=emoji;
+  document.getElementById('scTitle').textContent=title;
+  document.getElementById('scSub').textContent=sub;
+  document.getElementById('streakOverlay').classList.add('show');
+}
+
+function closeStreakPopup(){ document.getElementById('streakOverlay').classList.remove('show'); }
+
+function setupQuranSync(){
+  db.ref('/quranData').on('value', snap=>{
+    QURAN_DATA=snap.val()||{};
+    if(CU&&!QURAN_DATA[CU.id]) QURAN_DATA[CU.id]={currentPage:1,streak:0,lastReadDate:null,todayRead:false,totalPagesRead:0};
+    if(document.getElementById('screen-ibadah').classList.contains('active')&&_ibadabTab==='quran')
+      _updateQuranHero();
+  }, ()=>{
+    USERS.forEach(u=>{ try{ QURAN_DATA[u.id]=JSON.parse(localStorage.getItem('qd_'+u.id)||'null')||{}; }catch(e){} });
+  });
+}
+
+
 // ══════════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════════
@@ -1089,6 +1637,7 @@ function go(name){
   if(name==='week') renderWeek();
   if(name==='family') renderFamily();
   if(name==='settings') renderSettings();
+  if(name==='ibadah'){ if(_ibadabTab==='solat') renderSolat(); else renderQuranScreen(); }
 }
 
 // ══════════════════════════════════════════════
@@ -1109,6 +1658,8 @@ function closeSheet(){ document.getElementById('overlay').classList.remove('show
 function init(){
   loadAll();
   setupFirebaseSync();
+  setupPrayerSync();
+  setupQuranSync();
   buildPicker();
   document.getElementById('hDate').textContent=
     new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
