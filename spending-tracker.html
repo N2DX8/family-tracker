@@ -545,15 +545,7 @@ canvas{display:block;width:100%;}
 }
 .recipe-ftarea:focus{border-color:var(--cook);}
 .recipe-flbl{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;}
-.recipe-photo-box{
-  width:100%;height:150px;border:2px dashed var(--border);border-radius:var(--radius);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-  cursor:pointer;margin-bottom:10px;background:var(--cook-light);overflow:hidden;position:relative;
-  transition:border-color .15s;
-}
-.recipe-photo-box:active{border-color:var(--cook);}
-.recipe-photo-box img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-.recipe-photo-lbl{font-size:13px;color:var(--sub);text-align:center;}
+
 .recipe-save-btn{
   width:100%;background:var(--cook);color:#fff;border:none;border-radius:var(--radius);
   padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;
@@ -901,15 +893,9 @@ canvas{display:block;width:100%;}
       <div class="recipe-form-title" id="rFormTitle">New Recipe</div>
       <input type="hidden" id="rEditId"/>
       <input type="text" id="rName" class="recipe-finput" placeholder="Recipe name *"/>
-      <div class="recipe-photo-box" id="rPhotoBox" onclick="document.getElementById('rPhotoIn').click()">
-        <img id="rPhotoPreview" style="display:none"/>
-        <div class="recipe-photo-lbl" id="rPhotoLbl"><span style="font-size:28px">📷</span><br/>Tap to add photo</div>
-        <input type="file" id="rPhotoIn" accept="image/*" style="display:none" onchange="previewRPhoto(this)"/>
-      </div>
-      <div class="up-wrap" id="upWrap">
-        <span>Uploading…</span>
-        <div class="up-track"><div class="up-fill" id="upFill"></div></div>
-        <span id="upPct">0%</span>
+      <input type="url" id="rPhotoUrl" class="recipe-finput" placeholder="📷 Photo URL (optional — paste image link)" oninput="previewRPhotoUrl(this.value)"/>
+      <div id="rPhotoPreviewWrap" style="display:none;margin-bottom:10px;border-radius:10px;overflow:hidden;height:140px;">
+        <img id="rPhotoPreview" style="width:100%;height:140px;object-fit:cover;" onerror="document.getElementById('rPhotoPreviewWrap').style.display='none'"/>
       </div>
       <input type="text" id="rCookTime" class="recipe-finput" placeholder="⏱️ Cook time (e.g. 30 minutes)"/>
       <input type="text" id="rServings" class="recipe-finput" placeholder="🍽️ Servings (e.g. 4 people)"/>
@@ -970,7 +956,6 @@ canvas{display:block;width:100%;}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 // ── FIREBASE INIT ──────────────────────────────
 const firebaseConfig = {
@@ -984,7 +969,6 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const storage = firebase.storage();
 </script>
 <script>
 // ══════════════════════════════════════════════
@@ -1932,8 +1916,6 @@ function init(){
 // RECIPE DATA
 // ══════════════════════════════════════════════
 let RECIPE_DATA = {};
-let _rPhotoFile = null;
-let _rPhotoURL  = null; // existing URL when editing
 
 function setupRecipeSync(){
   db.ref('/recipes').on('value', snap=>{
@@ -2083,29 +2065,22 @@ function _showDetail(id){
 // ── ADD / EDIT FORM ────────────────────────────
 function openAddRecipe(editId){
   showRV('form');
-  _rPhotoFile=null; _rPhotoURL=null;
   document.getElementById('rEditId').value=editId||'';
   document.getElementById('rFormTitle').textContent=editId?'Edit Recipe':'New Recipe';
   document.getElementById('rDelBtn').style.display=editId?'':'none';
-  document.getElementById('rPhotoPreview').style.display='none';
-  document.getElementById('rPhotoLbl').style.display='flex';
-  document.getElementById('rPhotoIn').value='';
-  document.getElementById('upWrap').classList.remove('show');
+  document.getElementById('rPhotoPreviewWrap').style.display='none';
   if(editId&&RECIPE_DATA[editId]){
     const r=RECIPE_DATA[editId];
     document.getElementById('rName').value=r.name||'';
+    document.getElementById('rPhotoUrl').value=r.photoUrl||'';
     document.getElementById('rCookTime').value=r.cookTime||'';
     document.getElementById('rServings').value=r.servings||'';
     document.getElementById('rIngredients').value=r.ingredients||'';
     document.getElementById('rSteps').value=r.steps||'';
-    if(r.photoUrl){
-      _rPhotoURL=r.photoUrl;
-      const img=document.getElementById('rPhotoPreview');
-      img.src=r.photoUrl; img.style.display='';
-      document.getElementById('rPhotoLbl').style.display='none';
-    }
+    if(r.photoUrl) previewRPhotoUrl(r.photoUrl);
   } else {
     document.getElementById('rName').value='';
+    document.getElementById('rPhotoUrl').value='';
     document.getElementById('rCookTime').value='';
     document.getElementById('rServings').value='';
     document.getElementById('rIngredients').value='';
@@ -2114,13 +2089,15 @@ function openAddRecipe(editId){
   document.querySelector('.content').scrollTop=0;
 }
 
-function previewRPhoto(inp){
-  if(!inp.files||!inp.files[0]) return;
-  _rPhotoFile=inp.files[0];
-  const url=URL.createObjectURL(_rPhotoFile);
+function previewRPhotoUrl(url){
+  const wrap=document.getElementById('rPhotoPreviewWrap');
   const img=document.getElementById('rPhotoPreview');
-  img.src=url; img.style.display='';
-  document.getElementById('rPhotoLbl').style.display='none';
+  if(url&&url.startsWith('http')){
+    img.src=url;
+    wrap.style.display='';
+  } else {
+    wrap.style.display='none';
+  }
 }
 
 async function submitRecipe(){
@@ -2129,32 +2106,7 @@ async function submitRecipe(){
   const btn=document.getElementById('rSaveBtn');
   btn.disabled=true; btn.textContent='Saving…';
 
-  let photoUrl=_rPhotoURL||'';
-
-  // Upload new photo if selected
-  if(_rPhotoFile){
-    try{
-      const id=Date.now().toString(36)+Math.random().toString(36).slice(2);
-      const ref=storage.ref('recipes/'+id+'.jpg');
-      const wrap=document.getElementById('upWrap');
-      const fill=document.getElementById('upFill');
-      const pct=document.getElementById('upPct');
-      wrap.classList.add('show');
-      const task=ref.put(_rPhotoFile,{contentType:'image/jpeg'});
-      await new Promise((res,rej)=>{
-        task.on('state_changed',
-          snap=>{const p=Math.round(snap.bytesTransferred/snap.totalBytes*100);fill.style.width=p+'%';pct.textContent=p+'%';},
-          rej, async ()=>{photoUrl=await task.snapshot.ref.getDownloadURL();res();}
-        );
-      });
-      wrap.classList.remove('show');
-    }catch(e){
-      console.warn('[Photo upload]',e);
-      alert('Photo upload failed. Recipe saved without photo.');
-      photoUrl='';
-    }
-  }
-
+  const photoUrl=document.getElementById('rPhotoUrl').value.trim();
   const editId=document.getElementById('rEditId').value;
   const rid=editId||(Date.now().toString(36)+Math.random().toString(36).slice(2));
   const data={
