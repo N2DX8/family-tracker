@@ -597,6 +597,65 @@ canvas{display:block;width:100%;}
 }
 .azan-mute-btn:active{background:rgba(255,255,255,.3);}
 
+/* ── QIBLA COMPASS ─────────────────────────── */
+.qibla-card{
+  background:linear-gradient(160deg,#0d2137 0%,#1a3a5c 100%);
+  border-radius:var(--radius);padding:20px;margin-bottom:12px;color:#fff;
+}
+.qibla-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.qibla-title{font-size:16px;font-weight:700;margin-bottom:4px;}
+.qibla-sub{font-size:11px;opacity:.65;max-width:190px;line-height:1.4;}
+.qibla-deg-wrap{text-align:right;flex-shrink:0;}
+.qibla-deg{font-size:28px;font-weight:800;letter-spacing:-1px;color:#ffd60a;}
+.qibla-deg-lbl{font-size:10px;opacity:.55;margin-top:1px;}
+
+.qibla-compass{position:relative;width:210px;height:210px;margin:0 auto 10px;cursor:pointer;}
+.qc-outer{
+  position:relative;width:210px;height:210px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.18);
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.06) 0%,transparent 70%);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.3), 0 0 20px rgba(255,214,10,.08);
+}
+.qc-rose{position:absolute;inset:0;border-radius:50%;transition:transform .12s linear;}
+.qcr-label{position:absolute;font-size:13px;font-weight:800;line-height:1;}
+.qcr-n{top:6px;left:50%;transform:translateX(-50%);color:#ff3b30;}
+.qcr-s{bottom:6px;left:50%;transform:translateX(-50%);opacity:.7;}
+.qcr-e{right:7px;top:50%;transform:translateY(-50%);opacity:.7;}
+.qcr-w{left:7px;top:50%;transform:translateY(-50%);opacity:.7;}
+
+/* compass tick ring */
+.qc-ticks{position:absolute;inset:0;border-radius:50%;}
+.qc-tick{position:absolute;width:1px;background:rgba(255,255,255,.25);
+  left:50%;transform-origin:bottom center;}
+
+/* arrow container (rotates to point at Qibla) */
+.qc-arrow-wrap{
+  position:absolute;inset:0;
+  transition:transform .15s linear;
+  display:flex;align-items:flex-start;justify-content:center;
+}
+.qca-needle{
+  width:4px;height:80px;margin-top:10px;
+  background:linear-gradient(to top,rgba(255,214,10,0) 0%,#ffd60a 30%,#fff 85%,#fff 100%);
+  border-radius:4px;
+  box-shadow:0 0 12px rgba(255,214,10,.7);
+}
+.qca-kaabah{
+  position:absolute;top:4px;font-size:18px;line-height:1;
+  filter:drop-shadow(0 0 5px rgba(255,214,10,.9));
+}
+.qc-center{
+  position:absolute;top:50%;left:50%;width:14px;height:14px;
+  border-radius:50%;background:#ffd60a;
+  transform:translate(-50%,-50%);z-index:3;
+  box-shadow:0 0 8px rgba(255,214,10,.8);
+}
+
+.qibla-tip{
+  text-align:center;font-size:11px;opacity:.6;padding:4px 0 0;
+  letter-spacing:.1px;
+}
+
 </style>
 </head>
 <body>
@@ -791,7 +850,7 @@ canvas{display:block;width:100%;}
         <span class="s-icon">👨‍👩‍👧‍👦</span>
         <div class="s-text">
           <div class="s-lbl">Export Family Data (JSON)</div>
-          <div class="s-sub">All 5 members combined for family report</div>
+          <div class="s-sub">All 6 members combined for family report</div>
         </div>
         <span class="s-arrow">›</span>
       </div>
@@ -830,6 +889,17 @@ canvas{display:block;width:100%;}
         <span class="s-arrow">›</span>
       </div>
     </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Notifications</span></div>
+      <div class="s-row" onclick="requestNotifPermission()">
+        <span class="s-icon">🔔</span>
+        <div class="s-text">
+          <div class="s-lbl">Prayer Notifications</div>
+          <div class="s-sub" id="notifStatus">Tap to enable prayer time alerts</div>
+        </div>
+        <span class="s-arrow">›</span>
+      </div>
+    </div>
     <div style="text-align:center;padding:20px;font-size:12px;color:var(--sub)">
       HomeBase · Family App · 2026<br/>Spending · Ibadah · Recipes
     </div>
@@ -864,6 +934,37 @@ canvas{display:block;width:100%;}
       <div class="card">
         <div class="card-head"><span class="card-title">Family Prayer Tracker</span></div>
         <div id="familyPrayerGrid"></div>
+      </div>
+      <!-- ── QIBLA COMPASS ── -->
+      <div class="qibla-card">
+        <div class="qibla-header">
+          <div>
+            <div class="qibla-title">🕋 Arah Kiblat</div>
+            <div class="qibla-sub" id="qiblaStatus">Tap compass untuk aktifkan sensor arah</div>
+          </div>
+          <div class="qibla-deg-wrap">
+            <div class="qibla-deg" id="qiblaDeg">—°</div>
+            <div class="qibla-deg-lbl">dari Utara</div>
+          </div>
+        </div>
+        <div class="qibla-compass" id="qiblaCompassWrap" onclick="_qiblaTap()">
+          <div class="qc-outer">
+            <!-- Compass rose (rotates opposite to device heading so N faces actual North) -->
+            <div class="qc-rose" id="qiblaRose">
+              <span class="qcr-label qcr-n">N</span>
+              <span class="qcr-label qcr-e">E</span>
+              <span class="qcr-label qcr-s">S</span>
+              <span class="qcr-label qcr-w">W</span>
+            </div>
+            <!-- Qibla arrow (always points toward Kaabah) -->
+            <div class="qc-arrow-wrap" id="qiblaArrow">
+              <div class="qca-kaabah">🕋</div>
+              <div class="qca-needle"></div>
+            </div>
+            <div class="qc-center"></div>
+          </div>
+        </div>
+        <div class="qibla-tip" id="qiblaTip">📱 Tap kompas untuk aktifkan sensor arah (iOS)</div>
       </div>
     </div>
 
@@ -1022,6 +1123,7 @@ const USERS = [
   {id:'ibu',    name:'Ibu',    emoji:'👩', role:'Mother · 45',   color:'#ff9500'},
   {id:'abah',   name:'Abah',   emoji:'👨', role:'Father · 45',   color:'#5856d6'},
   {id:'amna',   name:'Amna',   emoji:'🌸', role:'School · 14',   color:'#ff2d55'},
+  {id:'aufa',   name:'Aufa',   emoji:'🌺', role:'School · 12',   color:'#af52de'},
 ];
 
 const CATS = {
@@ -1073,6 +1175,16 @@ const CATS = {
     {id:'snacks',        name:'Snacks',  icon:'🍭', color:'#ff2d55'},
     {id:'clothing',      name:'Clothing',icon:'👗', color:'#e6b800'},
     {id:'health',        name:'Health',  icon:'💊', color:'#32ade6'},
+    {id:'other',         name:'Other',   icon:'💸', color:'#8e8e93'},
+  ],
+  aufa:[
+    {id:'food',          name:'Food',    icon:'🍜', color:'#ff9500'},
+    {id:'snacks',        name:'Snacks',  icon:'🍭', color:'#ff2d55'},
+    {id:'toys',          name:'Toys',    icon:'🧸', color:'#af52de'},
+    {id:'school',        name:'School',  icon:'📚', color:'#34c759'},
+    {id:'clothing',      name:'Clothing',icon:'👗', color:'#e6b800'},
+    {id:'health',        name:'Health',  icon:'💊', color:'#32ade6'},
+    {id:'activities',    name:'Activities',icon:'🎠',color:'#007aff'},
     {id:'other',         name:'Other',   icon:'💸', color:'#8e8e93'},
   ],
 };
@@ -1501,6 +1613,7 @@ function renderSettings(){
   const d=new Set(ud().entries.map(e=>e.date)).size;
   document.getElementById('statsInfo').textContent=
     `${ud().entries.length} entries · ${fmt(t)} · ${d} days tracked`;
+  _updateNotifStatus();
 }
 
 function exportMyData(){
@@ -1673,6 +1786,7 @@ async function initPrayerTimes(){
     if(_cdInterval) clearInterval(_cdInterval);
     _updateCountdown();
     _cdInterval=setInterval(_updateCountdown,1000);
+    _sendPrayerTimesToSW(data); // schedule phone notifications
   } else {
     document.getElementById('prayerCountdown').textContent='Offline';
     document.getElementById('nextPrayerName').textContent='No internet';
@@ -1742,6 +1856,7 @@ async function renderSolat(){
   if(!CU) return;
   if(!PRAYER_TIMES) await initPrayerTimes();
   else { renderPrayerList(); if(!_cdInterval){ _updateCountdown(); _cdInterval=setInterval(_updateCountdown,1000); } }
+  setTimeout(initQiblaCompass, 300); // init compass (deferred so DOM is ready)
 }
 
 function setupPrayerSync(){
@@ -1907,6 +2022,86 @@ function setupQuranSync(){
 
 
 // ══════════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════════
+function _notifSupported(){ return 'Notification' in window && 'serviceWorker' in navigator; }
+function _notifGranted(){ return _notifSupported() && Notification.permission === 'granted'; }
+
+async function _sendPrayerTimesToSW(data){
+  if(!_notifGranted()) return;
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    if(!reg.active) return;
+    const prayers = PRAYERS.map(p=>({
+      key: p.key, name: p.name, emoji: p.emoji, ar: p.ar,
+      timeMins: _t2m(data.timings[p.api])
+    }));
+    reg.active.postMessage({ type:'PRAYER_TIMES', prayers });
+  } catch(e){ console.warn('[Notif] SW send err',e); }
+}
+
+async function requestNotifPermission(){
+  if(!_notifSupported()){ toast('⚠️ Notifications not supported on this browser'); return; }
+  if(_notifGranted()){
+    toast('✅ Notifications already enabled!');
+    if(PRAYER_TIMES) _sendPrayerTimesToSW(PRAYER_TIMES);
+    _updateNotifStatus();
+    return;
+  }
+  if(Notification.permission === 'denied'){
+    toast('🚫 Blocked — enable in browser/app settings',3000);
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if(perm === 'granted'){
+    toast('✅ Prayer notifications enabled!',2500);
+    if(PRAYER_TIMES) await _sendPrayerTimesToSW(PRAYER_TIMES);
+    // Register periodic background sync (Chrome Android only — best-effort)
+    try{
+      const reg = await navigator.serviceWorker.ready;
+      if('periodicSync' in reg){
+        const status = await navigator.permissions.query({name:'periodic-background-sync'});
+        if(status.state === 'granted')
+          await reg.periodicSync.register('homebase-prayer',{minInterval:60*1000});
+      }
+    } catch(e){}
+  } else {
+    toast('⚠️ Notification permission denied',2500);
+  }
+  _updateNotifStatus();
+}
+
+function _updateNotifStatus(){
+  const el = document.getElementById('notifStatus');
+  if(!el) return;
+  if(!_notifSupported()){ el.textContent='Not supported on this browser'; return; }
+  if(Notification.permission === 'granted')
+    el.textContent='✅ On — 5-min warning + azan alert + vibrate';
+  else if(Notification.permission === 'denied')
+    el.textContent='🚫 Blocked — enable in browser settings';
+  else
+    el.textContent='Tap to enable prayer time alerts';
+}
+
+function _setupNotifListener(){
+  if(!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.addEventListener('message', event => {
+    const msg = event.data; if(!msg) return;
+    if(msg.type === 'AZAN_TIME' || msg.type === 'AZAN_OPEN'){
+      const prayer = msg.prayer;
+      const found = PRAYERS.find(p => p.key === prayer?.key);
+      if(found){
+        const td = today(), azKey = td+'_'+found.key;
+        if(localStorage.getItem('az_last') !== azKey){
+          localStorage.setItem('az_last', azKey);
+          _triggerAzan(found);
+        }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════════
 function go(name){
@@ -1953,6 +2148,8 @@ function init(){
   document.getElementById('amtInput').addEventListener('input',updateBtn);
 
   _initAzanMuteBtn();
+  _setupNotifListener();
+  _updateNotifStatus();
   // Greeting
   const hr=new Date().getHours();
   document.getElementById('homeGreeting').textContent=
@@ -2043,7 +2240,7 @@ function renderRecipes(){
   showRV('list');
   // Show add button only for ibu
   document.getElementById('recipeAddWrap').style.display=
-    (CU&&CU.id==='ibu')?'':'none';
+    (CU&&(CU.id==='ibu'||CU.id==='abah'))?'':'none';
   _renderRecipeList('');
 }
 
@@ -2104,7 +2301,7 @@ function _showDetail(id){
     `<div class="recipe-step-item"><div class="recipe-step-num">${i+1}</div><div>${esc(s)}</div></div>`
   ).join('');
   let editBtn='';
-  if(CU&&CU.id==='ibu') editBtn=`<button class="recipe-edit-btn" onclick="openAddRecipe('${id}')">✏️ Edit Recipe</button>`;
+  if(CU&&(CU.id==='ibu'||CU.id==='abah')) editBtn=`<button class="recipe-edit-btn" onclick="openAddRecipe('${id}')">✏️ Edit Recipe</button>`;
   document.getElementById('recipeDetailBody').innerHTML=`
     ${imgHtml}
     <div class="recipe-det-name">${esc(r.name)}</div>
@@ -2205,6 +2402,100 @@ setInterval(()=>{
 
 
 
+
+// ══════════════════════════════════════════════
+// QIBLA COMPASS ENGINE
+// ══════════════════════════════════════════════
+const _KA_LAT = 21.4225, _KA_LNG = 39.8262; // Kaabah coordinates
+let _qiblaAngle    = null;   // bearing to Qibla from user location
+let _compassHdg    = 0;      // device compass heading (degrees, clockwise from North)
+let _compassInited = false;  // geolocation fetched
+let _sensorActive  = false;  // DeviceOrientation listener attached
+
+function _calcQibla(lat, lng){
+  const φ1=lat*Math.PI/180, φ2=_KA_LAT*Math.PI/180;
+  const Δλ=(_KA_LNG-lng)*Math.PI/180;
+  const y=Math.sin(Δλ)*Math.cos(φ2);
+  const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+  return((Math.atan2(y,x)*180/Math.PI)+360)%360;
+}
+
+function _renderCompass(){
+  if(_qiblaAngle===null) return;
+  // Rose rotates so N always faces true North on screen
+  const rose = document.getElementById('qiblaRose');
+  const arrow = document.getElementById('qiblaArrow');
+  const deg   = document.getElementById('qiblaDeg');
+  if(rose)  rose.style.transform  = `rotate(${-_compassHdg}deg)`;
+  // Arrow shows direction to Qibla = qiblaAngle rotated by device heading offset
+  if(arrow) arrow.style.transform = `rotate(${(_qiblaAngle-_compassHdg+360)%360}deg)`;
+  if(deg)   deg.textContent       = Math.round(_qiblaAngle)+'°';
+}
+
+function _onOrientation(e){
+  if(e.webkitCompassHeading!==undefined){
+    _compassHdg=e.webkitCompassHeading;          // iOS — reliable
+  } else if(e.absolute && e.alpha!==null){
+    _compassHdg=(360-e.alpha)%360;               // Android absolute
+  } else if(e.alpha!==null){
+    _compassHdg=(360-e.alpha)%360;               // Android fallback
+  }
+  _renderCompass();
+}
+
+function _attachSensor(){
+  if(_sensorActive) return;
+  _sensorActive=true;
+  window.addEventListener('deviceorientationabsolute',_onOrientation,true);
+  window.addEventListener('deviceorientation',_onOrientation,true);
+  const tip=document.getElementById('qiblaTip');
+  if(tip) tip.style.display='none';
+}
+
+async function _qiblaTap(){
+  // Request iOS 13+ sensor permission on tap
+  if(typeof DeviceOrientationEvent!=='undefined' &&
+     typeof DeviceOrientationEvent.requestPermission==='function'){
+    try{
+      const r=await DeviceOrientationEvent.requestPermission();
+      if(r==='granted') _attachSensor();
+    } catch(e){}
+  } else {
+    _attachSensor(); // Android / desktop — no permission needed
+  }
+  if(!_compassInited) initQiblaCompass();
+}
+
+function initQiblaCompass(){
+  if(_compassInited) return;
+  _compassInited=true;
+  const status=document.getElementById('qiblaStatus');
+  const tip=document.getElementById('qiblaTip');
+
+  // Show tap tip on iOS (needs gesture to request sensor permission)
+  const needsGesture = typeof DeviceOrientationEvent!=='undefined' &&
+                       typeof DeviceOrientationEvent.requestPermission==='function';
+  if(tip) tip.style.display = needsGesture ? '' : 'none';
+  if(!needsGesture) _attachSensor();
+
+  if(!navigator.geolocation){
+    _qiblaAngle=_calcQibla(3.1390,101.6869);
+    if(status) status.textContent='📍 GPS tidak tersedia — guna lokasi KL';
+    _renderCompass(); return;
+  }
+  if(status) status.textContent='📍 Mendapatkan lokasi GPS...';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:lat,longitude:lng}=pos.coords;
+    _qiblaAngle=_calcQibla(lat,lng);
+    if(status) status.textContent=`📍 ${lat.toFixed(3)}°N, ${lng.toFixed(3)}°E`;
+    _renderCompass();
+  }, ()=>{
+    _qiblaAngle=_calcQibla(3.1390,101.6869);
+    if(status) status.textContent='📍 Guna lokasi Kuala Lumpur (GPS dinafikan)';
+    _renderCompass();
+  },{timeout:8000,enableHighAccuracy:true});
+}
+
 // ══════════════════════════════════════════════
 // AZAN AUDIO ENGINE
 // ══════════════════════════════════════════════
@@ -2292,7 +2583,7 @@ function _showAzanBanner(prayer, needsTap){
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js',{scope:'./'})
+    navigator.serviceWorker.register('./sw.js?v=5',{scope:'./'})
       .then(reg=>{
         reg.addEventListener('updatefound',()=>{
           reg.installing.addEventListener('statechange',function(){
