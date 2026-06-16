@@ -559,6 +559,44 @@ canvas{display:block;width:100%;}
 .up-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
 .up-fill{height:100%;background:var(--cook);border-radius:2px;width:0%;transition:width .2s;}
 
+/* ── AZAN BANNER ─────────────────────────────── */
+.azan-banner{
+  position:fixed;top:0;left:0;right:0;z-index:2000;
+  transform:translateY(-110%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  padding:max(env(safe-area-inset-top,0px),0px) 0 0;
+}
+.azan-banner.show{transform:translateY(0);}
+.azan-banner-inner{
+  background:linear-gradient(135deg,#1a6b3c,#0f4d2a);
+  color:#fff;padding:16px 20px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 4px 24px rgba(0,0,0,.35);
+}
+.azan-banner-emoji{font-size:28px;flex-shrink:0;}
+.azan-banner-info{flex:1;}
+.azan-banner-title{font-size:16px;font-weight:700;letter-spacing:-.2px;}
+.azan-banner-sub{font-size:13px;opacity:.8;margin-top:2px;font-family:'Amiri',serif;}
+.azan-play-btn{
+  background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);
+  color:#fff;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;
+}
+.azan-play-btn:active{background:rgba(255,255,255,.35);}
+.azan-close-btn{
+  background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;
+  cursor:pointer;padding:0 4px;flex-shrink:0;
+}
+
+/* ── MUTE TOGGLE ─────────────────────────────── */
+.azan-mute-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);
+  color:#fff;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;margin-top:12px;
+  transition:background .15s;
+}
+.azan-mute-btn:active{background:rgba(255,255,255,.3);}
+
 </style>
 </head>
 <body>
@@ -814,6 +852,7 @@ canvas{display:block;width:100%;}
         <div class="ph-next-ar" id="nextPrayerAr"></div>
         <div class="ph-countdown" id="prayerCountdown">--:--:--</div>
         <div class="ph-countdown-sub" id="prayerCountdownSub">Loading prayer times…</div>
+      <button class="azan-mute-btn" id="azanMuteBtn" onclick="toggleAzanMute()">🔊 Azan: On</button>
       </div>
       <div class="card">
         <div class="card-head">
@@ -910,6 +949,9 @@ canvas{display:block;width:100%;}
 
 
 </div>
+
+<!-- AZAN BANNER -->
+<div class="azan-banner" id="azanBanner"><div class="azan-banner-inner"><div class="azan-banner-emoji" id="azanEmoji">🕌</div><div class="azan-banner-info"><div class="azan-banner-title" id="azanTitle">Masuk Waktu Solat</div><div class="azan-banner-sub" id="azanSub">اللَّهُ أَكْبَر</div></div><button class="azan-play-btn" id="azanPlayBtn" onclick="_azanTapPlay()">▶ Play</button><button class="azan-close-btn" onclick="stopAzan();document.getElementById('azanBanner').classList.remove('show')">✕</button></div></div>
 
 <!-- TAB BAR -->
 <div class="tabbar">
@@ -1579,6 +1621,17 @@ function _updateCountdown(){
     `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
   document.getElementById('prayerCountdownSub').textContent=
     next.tomorrow?'Esok pagi (Tomorrow)':'at '+_m2disp(next.timeMins%1440);
+
+  // ── AZAN TRIGGER ─────────────────────────────────────
+  // Fire within 3-second window of prayer time (handles interval drift)
+  if(!next.tomorrow && diff<=3){
+    const td=new Date().toISOString().slice(0,10);
+    const azKey=td+'_'+next.key;
+    if(localStorage.getItem('az_last')!==azKey){
+      localStorage.setItem('az_last', azKey);
+      _triggerAzan(next);
+    }
+  }
 }
 
 async function _fetchPrayerTimes(lat,lng){
@@ -1899,6 +1952,7 @@ function init(){
     new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
   document.getElementById('amtInput').addEventListener('input',updateBtn);
 
+  _initAzanMuteBtn();
   // Greeting
   const hr=new Date().getHours();
   document.getElementById('homeGreeting').textContent=
@@ -2149,6 +2203,92 @@ setInterval(()=>{
   if(CU&&document.getElementById('screen-home').classList.contains('active')) renderHome();
 },1000);
 
+
+
+// ══════════════════════════════════════════════
+// AZAN AUDIO ENGINE
+// ══════════════════════════════════════════════
+// Beautiful Makkah azan (islamcan.com — free Islamic audio host)
+const AZAN_URL       = 'https://www.islamcan.com/audio/adhan/azan1.mp3';
+const AZAN_FAJR_URL  = 'https://www.islamcan.com/audio/adhan/azan2.mp3'; // has 'as-salatu khayrun min an-nawm'
+
+let _azanAudio   = null;
+let _azanMuted   = localStorage.getItem('az_muted') === '1';
+let _azanPending = null; // stores prayer obj if autoplay was blocked
+
+function _initAzanMuteBtn(){
+  const btn = document.getElementById('azanMuteBtn');
+  if(btn) btn.textContent = _azanMuted ? '🔇 Azan: Off' : '🔊 Azan: On';
+}
+
+function toggleAzanMute(){
+  _azanMuted = !_azanMuted;
+  localStorage.setItem('az_muted', _azanMuted ? '1' : '0');
+  _initAzanMuteBtn();
+  if(_azanMuted) stopAzan();
+}
+
+function stopAzan(){
+  if(_azanAudio){ _azanAudio.pause(); _azanAudio.currentTime = 0; _azanAudio = null; }
+  _azanPending = null;
+  document.getElementById('azanBanner').classList.remove('show');
+}
+
+function _azanTapPlay(){
+  // User tapped Play on banner — resume pending or replay
+  const prayer = _azanPending;
+  document.getElementById('azanPlayBtn').style.display = 'none';
+  const url = (prayer && prayer.key === 'subuh') ? AZAN_FAJR_URL : AZAN_URL;
+  if(_azanAudio){ _azanAudio.pause(); }
+  _azanAudio = new Audio(url);
+  _azanAudio.volume = 1.0;
+  _azanAudio.play().catch(e => console.warn('[Azan] play err', e));
+  _azanAudio.onended = () => {
+    _azanAudio = null;
+    setTimeout(() => document.getElementById('azanBanner').classList.remove('show'), 3000);
+  };
+}
+
+function _triggerAzan(prayer){
+  if(_azanMuted) {
+    // Still show silent banner
+    _showAzanBanner(prayer, false);
+    return;
+  }
+  const url = prayer.key === 'subuh' ? AZAN_FAJR_URL : AZAN_URL;
+  if(_azanAudio){ _azanAudio.pause(); }
+  _azanAudio = new Audio(url);
+  _azanAudio.volume = 1.0;
+  _azanPending = prayer;
+
+  const p = _azanAudio.play();
+  if(p && p.then){
+    p.then(() => {
+      // playing OK — hide tap button
+      _showAzanBanner(prayer, false);
+      _azanAudio.onended = () => {
+        _azanAudio = null;
+        setTimeout(() => document.getElementById('azanBanner').classList.remove('show'), 4000);
+      };
+    }).catch(() => {
+      // autoplay blocked — show banner with tap button
+      _showAzanBanner(prayer, true);
+    });
+  } else {
+    _showAzanBanner(prayer, false);
+  }
+}
+
+function _showAzanBanner(prayer, needsTap){
+  document.getElementById('azanEmoji').textContent  = prayer.emoji;
+  document.getElementById('azanTitle').textContent  = 'Masuk Waktu ' + prayer.name;
+  document.getElementById('azanSub').textContent    = prayer.ar;
+  const playBtn = document.getElementById('azanPlayBtn');
+  playBtn.style.display = needsTap ? '' : 'none';
+  document.getElementById('azanBanner').classList.add('show');
+  // Auto-dismiss after 4 minutes if no interaction
+  setTimeout(() => document.getElementById('azanBanner').classList.remove('show'), 240000);
+}
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
