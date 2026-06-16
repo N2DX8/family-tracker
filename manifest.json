@@ -1,13 +1,13 @@
 {
-  "name": "Family Spending Tracker",
-  "short_name": "Tracker",
-  "description": "Family spending tracker — Naufal, Wazif, Ibu, Abah & Amna",
+  "name": "HomeBase",
+  "short_name": "HomeBase",
+  "description": "Your family home app — spending, ibadah & recipes",
   "start_url": "./spending-tracker.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f2f2f7",
-  "theme_color": "#007aff",
+  "theme_color": "#E8640A",
   "icons": [
     {
       "src": "icon-192.png",
@@ -22,6 +22,6 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "productivity"],
+  "categories": ["lifestyle", "productivity"],
   "lang": "en-MY"
 }

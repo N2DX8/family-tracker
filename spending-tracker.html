@@ -6,10 +6,10 @@
 <link rel="manifest" href="manifest.json"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="apple-mobile-web-app-title" content="Family Tracker"/>
+<meta name="apple-mobile-web-app-title" content="HomeBase"/>
 <link rel="apple-touch-icon" href="icon-192.png"/>
 <meta name="theme-color" content="#007aff"/>
-<title>Family Tracker</title>
+<title>HomeBase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
@@ -398,6 +398,175 @@ canvas{display:block;width:100%;}
 .sc-btn{background:var(--user);color:#fff;border:none;border-radius:14px;
   padding:13px 36px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
 
+/* ── COOKING THEME VARS ─────────────────────────── */
+:root{
+  --cook:#E8640A;--cook-d:#B84D07;--cook-light:#FFF3E0;
+}
+
+/* ── HOME SCREEN ────────────────────────────────── */
+.home-hero{padding:16px 4px 12px;}
+.home-greeting{font-size:13px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.home-name{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-top:3px;}
+.home-widgets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.home-widget{
+  background:var(--card);border-radius:var(--radius);padding:14px 12px;
+  cursor:pointer;transition:transform .12s;
+}
+.home-widget:active{transform:scale(.97);}
+.hw-label{font-size:10px;font-weight:700;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px;}
+.hw-main{font-size:18px;font-weight:800;letter-spacing:-.3px;line-height:1.2;}
+.hw-sub{font-size:11px;color:var(--sub);margin-top:3px;}
+.home-widget.prayer{border-left:3px solid #34c759;}
+.home-widget.spending{border-left:3px solid var(--user);}
+.home-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:14px 2px 10px;
+}
+.home-sec-hdr h3{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+.home-sec-hdr button{
+  font-size:13px;color:var(--cook);background:none;border:none;
+  cursor:pointer;font-family:inherit;font-weight:600;padding:4px 0;
+}
+.home-featured{
+  background:var(--card);border-radius:var(--radius);overflow:hidden;
+  margin-bottom:14px;cursor:pointer;transition:transform .12s;
+}
+.home-featured:active{transform:scale(.98);}
+.home-feat-img{
+  width:100%;height:150px;object-fit:cover;
+  background:linear-gradient(135deg,#fde8d3,#f5cba7);
+  display:flex;align-items:center;justify-content:center;font-size:56px;
+}
+.home-feat-body{padding:14px 16px;}
+.home-feat-name{font-size:17px;font-weight:700;margin-bottom:3px;}
+.home-feat-meta{font-size:12px;color:var(--sub);}
+.home-add-btn{
+  width:100%;background:var(--user);color:#fff;border:none;
+  border-radius:var(--radius);padding:15px;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:inherit;margin-bottom:8px;transition:opacity .15s;
+}
+.home-add-btn:active{opacity:.8;}
+.home-no-recipe{
+  background:var(--card);border-radius:var(--radius);padding:28px 20px;
+  text-align:center;color:var(--sub);font-size:14px;margin-bottom:14px;
+}
+
+/* ── RECIPES SCREEN ─────────────────────────────── */
+.recipes-search-wrap{
+  background:var(--card);border-radius:10px;padding:10px 14px;
+  display:flex;align-items:center;gap:8px;margin-bottom:12px;
+  border:.5px solid var(--border);
+}
+.recipes-search-wrap input{
+  flex:1;border:none;outline:none;font-size:15px;background:transparent;
+  font-family:inherit;color:var(--text);
+}
+.recipe-add-btn{
+  width:100%;background:var(--cook);color:#fff;border:none;
+  border-radius:var(--radius);padding:13px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;margin-bottom:12px;transition:opacity .15s;
+}
+.recipe-add-btn:active{opacity:.8;}
+.recipe-card{
+  background:var(--card);border-radius:var(--radius);overflow:hidden;
+  margin-bottom:10px;display:flex;cursor:pointer;transition:transform .12s;
+  min-height:84px;
+}
+.recipe-card:active{transform:scale(.98);}
+.recipe-card-img{
+  width:84px;height:84px;object-fit:cover;
+  background:linear-gradient(135deg,#fde8d3,#f5cba7);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:32px;
+}
+.recipe-card-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.recipe-card-name{font-size:15px;font-weight:700;margin-bottom:4px;}
+.recipe-card-meta{font-size:12px;color:var(--sub);}
+.recipe-empty{text-align:center;padding:56px 24px;color:var(--sub);}
+.recipe-empty-icon{font-size:52px;margin-bottom:10px;}
+.recipe-empty-txt{font-size:15px;font-weight:500;}
+.recipe-back-btn{
+  background:none;border:none;color:var(--cook);font-size:15px;font-weight:600;
+  cursor:pointer;font-family:inherit;padding:4px 0 14px;display:flex;align-items:center;gap:4px;
+}
+/* detail */
+.recipe-det-img{
+  width:100%;height:190px;object-fit:cover;border-radius:var(--radius);
+  background:linear-gradient(135deg,#fde8d3,#f5cba7);
+  display:flex;align-items:center;justify-content:center;font-size:68px;
+  margin-bottom:14px;overflow:hidden;
+}
+.recipe-det-name{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:10px;}
+.recipe-det-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.recipe-chip{
+  background:var(--cook-light);border-radius:20px;padding:5px 12px;
+  font-size:12px;font-weight:700;color:var(--cook);
+}
+.recipe-sec-lbl{
+  font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;
+  letter-spacing:.7px;margin-bottom:8px;
+}
+.recipe-ing-item{
+  display:flex;align-items:flex-start;gap:10px;padding:9px 0;
+  border-bottom:.5px solid var(--border);font-size:14px;line-height:1.4;
+}
+.recipe-ing-item:last-child{border-bottom:none;}
+.recipe-dot{width:7px;height:7px;border-radius:50%;background:var(--cook);flex-shrink:0;margin-top:5px;}
+.recipe-step-item{
+  display:flex;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border);
+  font-size:14px;line-height:1.5;
+}
+.recipe-step-item:last-child{border-bottom:none;}
+.recipe-step-num{
+  width:26px;height:26px;border-radius:50%;background:var(--cook);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  font-weight:700;flex-shrink:0;
+}
+.recipe-edit-btn{
+  width:100%;background:var(--cook);color:#fff;border:none;border-radius:var(--radius);
+  padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;
+}
+.recipe-del-btn{
+  width:100%;background:none;color:#ff3b30;border:1.5px solid #ff3b30;
+  border-radius:var(--radius);padding:12px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;margin-top:8px;
+}
+/* form */
+.recipe-form-title{font-size:21px;font-weight:800;margin-bottom:14px;letter-spacing:-.3px;}
+.recipe-finput{
+  width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;
+  font-size:15px;font-family:inherit;background:var(--card);margin-bottom:10px;
+  outline:none;color:var(--text);transition:border-color .15s;
+}
+.recipe-finput:focus{border-color:var(--cook);}
+.recipe-ftarea{
+  width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;
+  font-size:15px;font-family:inherit;background:var(--card);margin-bottom:10px;
+  outline:none;min-height:110px;resize:vertical;color:var(--text);transition:border-color .15s;
+}
+.recipe-ftarea:focus{border-color:var(--cook);}
+.recipe-flbl{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;}
+.recipe-photo-box{
+  width:100%;height:150px;border:2px dashed var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;margin-bottom:10px;background:var(--cook-light);overflow:hidden;position:relative;
+  transition:border-color .15s;
+}
+.recipe-photo-box:active{border-color:var(--cook);}
+.recipe-photo-box img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.recipe-photo-lbl{font-size:13px;color:var(--sub);text-align:center;}
+.recipe-save-btn{
+  width:100%;background:var(--cook);color:#fff;border:none;border-radius:var(--radius);
+  padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;
+}
+.recipe-save-btn:disabled{opacity:.45;}
+.recipe-save-btn:active:not(:disabled){opacity:.8;}
+.up-wrap{
+  display:none;align-items:center;gap:10px;font-size:13px;color:var(--sub);margin-bottom:10px;
+}
+.up-wrap.show{display:flex;}
+.up-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.up-fill{height:100%;background:var(--cook);border-radius:2px;width:0%;transition:width .2s;}
+
 </style>
 </head>
 <body>
@@ -405,8 +574,8 @@ canvas{display:block;width:100%;}
 <!-- ═══ USER PICKER ═══ -->
 <div class="picker" id="picker">
   <div class="picker-head">
-    <h1>👨‍👩‍👧‍👦 Family Tracker</h1>
-    <p>Who's spending today?</p>
+    <h1>🏠 HomeBase</h1>
+    <p>Welcome to HomeBase 🏠</p>
   </div>
   <div class="picker-list" id="pickerList"></div>
 </div>
@@ -416,7 +585,7 @@ canvas{display:block;width:100%;}
   <div class="h-left">
     <div class="h-avatar" id="hAvatar" onclick="switchUser()"></div>
     <div>
-      <div class="h-title" id="hTitle">Family Tracker</div>
+      <div class="h-title" id="hTitle">HomeBase</div>
       <div class="h-date" id="hDate"></div>
     </div>
   </div>
@@ -428,8 +597,37 @@ canvas{display:block;width:100%;}
 
 <div class="content">
 
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="home-hero">
+      <div class="home-greeting" id="homeGreeting">Good morning ☀️</div>
+      <div class="home-name" id="homeName"></div>
+    </div>
+    <div class="home-widgets">
+      <div class="home-widget prayer" onclick="go('ibadah')">
+        <div class="hw-label">🕌 Next Prayer</div>
+        <div class="hw-main" id="homeNextPrayer">—</div>
+        <div class="hw-sub" id="homeCountdown">Loading…</div>
+      </div>
+      <div class="home-widget spending" onclick="go('today')">
+        <div class="hw-label">💰 Today</div>
+        <div class="hw-main" id="homeSpending">RM 0.00</div>
+        <div class="hw-sub" id="homeSpendingSub">0 items</div>
+      </div>
+    </div>
+    <div class="home-sec-hdr">
+      <h3>🍳 Recipe of the Day</h3>
+      <button onclick="go('recipes')">See all →</button>
+    </div>
+    <div id="homeFeaturedRecipe">
+      <div class="home-no-recipe">No recipes yet 🍽️<br/>Add one in the Recipes tab</div>
+    </div>
+    <button class="home-add-btn" onclick="go('add')">➕ Add Spending</button>
+  </div>
+
+
   <!-- ADD -->
-  <div class="screen active" id="screen-add">
+  <div class="screen" id="screen-add">
     <div class="amt-box">
       <div class="amt-lbl">How much did you spend?</div>
       <div class="amt-row">
@@ -603,7 +801,7 @@ canvas{display:block;width:100%;}
       </div>
     </div>
     <div style="text-align:center;padding:20px;font-size:12px;color:var(--sub)">
-      Family Spending Tracker · UM 2026<br/>Data stored locally on this device
+      HomeBase · Family App · 2026<br/>Spending · Ibadah · Recipes
     </div>
     <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)"/>
   </div>
@@ -679,12 +877,60 @@ canvas{display:block;width:100%;}
     </div>
   </div>
 
+  <!-- RECIPES -->
+  <div class="screen" id="screen-recipes">
+    <!-- LIST VIEW -->
+    <div id="rvList">
+      <div class="recipes-search-wrap">
+        <span style="font-size:15px">🔍</span>
+        <input type="text" id="recipeSearch" placeholder="Search recipes…" oninput="filterRecipes(this.value)"/>
+      </div>
+      <div id="recipeAddWrap" style="display:none">
+        <button class="recipe-add-btn" onclick="openAddRecipe(null)">🍳 Add New Recipe</button>
+      </div>
+      <div id="recipesList"></div>
+    </div>
+    <!-- DETAIL VIEW -->
+    <div id="rvDetail" style="display:none">
+      <button class="recipe-back-btn" onclick="showRV('list')">← Back</button>
+      <div id="recipeDetailBody"></div>
+    </div>
+    <!-- FORM VIEW -->
+    <div id="rvForm" style="display:none">
+      <button class="recipe-back-btn" onclick="showRV('list')">← Cancel</button>
+      <div class="recipe-form-title" id="rFormTitle">New Recipe</div>
+      <input type="hidden" id="rEditId"/>
+      <input type="text" id="rName" class="recipe-finput" placeholder="Recipe name *"/>
+      <div class="recipe-photo-box" id="rPhotoBox" onclick="document.getElementById('rPhotoIn').click()">
+        <img id="rPhotoPreview" style="display:none"/>
+        <div class="recipe-photo-lbl" id="rPhotoLbl"><span style="font-size:28px">📷</span><br/>Tap to add photo</div>
+        <input type="file" id="rPhotoIn" accept="image/*" style="display:none" onchange="previewRPhoto(this)"/>
+      </div>
+      <div class="up-wrap" id="upWrap">
+        <span>Uploading…</span>
+        <div class="up-track"><div class="up-fill" id="upFill"></div></div>
+        <span id="upPct">0%</span>
+      </div>
+      <input type="text" id="rCookTime" class="recipe-finput" placeholder="⏱️ Cook time (e.g. 30 minutes)"/>
+      <input type="text" id="rServings" class="recipe-finput" placeholder="🍽️ Servings (e.g. 4 people)"/>
+      <label class="recipe-flbl">Ingredients</label>
+      <textarea id="rIngredients" class="recipe-ftarea" placeholder="One per line, e.g.&#10;2 cups flour&#10;1 tsp salt"></textarea>
+      <label class="recipe-flbl">Steps</label>
+      <textarea id="rSteps" class="recipe-ftarea" placeholder="One step per line, e.g.&#10;Mix all dry ingredients&#10;Add water gradually"></textarea>
+      <button class="recipe-save-btn" id="rSaveBtn" onclick="submitRecipe()">💾 Save Recipe</button>
+      <button class="recipe-del-btn" id="rDelBtn" style="display:none" onclick="deleteRecipeById()">🗑️ Delete Recipe</button>
+    </div>
+  </div>
+
 
 </div>
 
 <!-- TAB BAR -->
 <div class="tabbar">
-  <div class="tab active" onclick="go('add')" id="tab-add">
+  <div class="tab active" onclick="go('home')" id="tab-home">
+    <span class="tab-icon">🏠</span><span class="tab-label">Home</span>
+  </div>
+  <div class="tab" onclick="go('add')" id="tab-add">
     <span class="tab-icon">➕</span><span class="tab-label">Add</span>
   </div>
   <div class="tab" onclick="go('today')" id="tab-today">
@@ -693,14 +939,11 @@ canvas{display:block;width:100%;}
   <div class="tab" onclick="go('week')" id="tab-week">
     <span class="tab-icon">📊</span><span class="tab-label">Week</span>
   </div>
-  <div class="tab" onclick="go('family')" id="tab-family">
-    <span class="tab-icon">👨‍👩‍👧‍👦</span><span class="tab-label">Family</span>
-  </div>
   <div class="tab" onclick="go('ibadah')" id="tab-ibadah">
     <span class="tab-icon">🕌</span><span class="tab-label">Ibadah</span>
   </div>
-    <div class="tab" onclick="go('settings')" id="tab-settings">
-    <span class="tab-icon">⚙️</span><span class="tab-label">Settings</span>
+  <div class="tab" onclick="go('recipes')" id="tab-recipes">
+    <span class="tab-icon">🍳</span><span class="tab-label">Recipes</span>
   </div>
 </div>
 
@@ -727,6 +970,7 @@ canvas{display:block;width:100%;}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 // ── FIREBASE INIT ──────────────────────────────
 const firebaseConfig = {
@@ -740,6 +984,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const storage = firebase.storage();
 </script>
 <script>
 // ══════════════════════════════════════════════
@@ -1630,14 +1875,18 @@ function setupQuranSync(){
 function go(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
+  const scr=document.getElementById('screen-'+name);
+  const tb=document.getElementById('tab-'+name);
+  if(scr) scr.classList.add('active');
+  if(tb) tb.classList.add('active');
   document.querySelector('.content').scrollTop=0;
+  if(name==='home') renderHome();
   if(name==='today') renderToday();
   if(name==='week') renderWeek();
   if(name==='family') renderFamily();
   if(name==='settings') renderSettings();
   if(name==='ibadah'){ if(_ibadabTab==='solat') renderSolat(); else renderQuranScreen(); }
+  if(name==='recipes') renderRecipes();
 }
 
 // ══════════════════════════════════════════════
@@ -1660,10 +1909,16 @@ function init(){
   setupFirebaseSync();
   setupPrayerSync();
   setupQuranSync();
+  setupRecipeSync();
   buildPicker();
   document.getElementById('hDate').textContent=
     new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
   document.getElementById('amtInput').addEventListener('input',updateBtn);
+
+  // Greeting
+  const hr=new Date().getHours();
+  document.getElementById('homeGreeting').textContent=
+    hr<12?'Good morning ☀️':hr<17?'Good afternoon 🌤️':'Good evening 🌙';
 
   const saved=localStorage.getItem('sp_cur');
   if(saved&&USERS.find(u=>u.id===saved)) selectUser(saved);
@@ -1672,6 +1927,277 @@ function init(){
 // ══════════════════════════════════════════════
 // SERVICE WORKER (offline fix — no CDN)
 // ══════════════════════════════════════════════
+
+// ══════════════════════════════════════════════
+// RECIPE DATA
+// ══════════════════════════════════════════════
+let RECIPE_DATA = {};
+let _rPhotoFile = null;
+let _rPhotoURL  = null; // existing URL when editing
+
+function setupRecipeSync(){
+  db.ref('/recipes').on('value', snap=>{
+    RECIPE_DATA = snap.val()||{};
+    if(document.getElementById('screen-recipes').classList.contains('active')) renderRecipes();
+    if(document.getElementById('screen-home').classList.contains('active')) renderHome();
+  }, e=>console.warn('[Recipe sync]',e));
+}
+
+// ── RENDER HOME ────────────────────────────────
+function renderHome(){
+  if(!CU){ return; }
+  document.getElementById('homeName').textContent = CU.name;
+
+  // Spending widget
+  const td = new Date().toISOString().slice(0,10);
+  const entries = Object.values(DATA[CU.id]||{}).filter(e=>e.date===td);
+  const total = entries.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('homeSpending').textContent = 'RM '+total.toFixed(2);
+  document.getElementById('homeSpendingSub').textContent = entries.length+' item'+(entries.length===1?'':'s');
+
+  // Prayer widget (re-use existing prayer times)
+  if(PRAYER_TIMES){
+    const now=Date.now();
+    const PLIST=[
+      {name:'Subuh',api:'Fajr',ar:'الفجر'},{name:'Zuhur',api:'Dhuhr',ar:'الظهر'},
+      {name:'Asar',api:'Asr',ar:'العصر'},{name:'Maghrib',api:'Maghrib',ar:'المغرب'},
+      {name:'Isyak',api:'Isha',ar:'العشاء'}
+    ];
+    let next=null;
+    for(const p of PLIST){
+      const [h,m]=(PRAYER_TIMES[p.api]||'00:00').split(':').map(Number);
+      const t=new Date(); t.setHours(h,m,0,0);
+      if(t.getTime()>now){next={name:p.name,t};break;}
+    }
+    if(next){
+      document.getElementById('homeNextPrayer').textContent=next.name;
+      const diff=Math.max(0,next.t.getTime()-Date.now());
+      const hh=Math.floor(diff/3600000),mm=Math.floor((diff%3600000)/60000),ss=Math.floor((diff%60000)/1000);
+      document.getElementById('homeCountdown').textContent=
+        hh>0?hh+'h '+mm+'m':mm>0?mm+'m '+ss+'s':ss+'s';
+    } else {
+      document.getElementById('homeNextPrayer').textContent='Subuh';
+      document.getElementById('homeCountdown').textContent='Tomorrow';
+    }
+  }
+
+  // Featured recipe — random from RECIPE_DATA
+  const keys=Object.keys(RECIPE_DATA);
+  const box=document.getElementById('homeFeaturedRecipe');
+  if(!keys.length){
+    box.innerHTML='<div class="home-no-recipe">No recipes yet 🍽️<br/>Add one in the Recipes tab</div>';
+    return;
+  }
+  const rid=keys[Math.floor(Math.random()*keys.length)];
+  const r=RECIPE_DATA[rid];
+  const imgHtml=r.photoUrl
+    ?`<img src="${r.photoUrl}" class="home-feat-img" style="font-size:0" onerror="this.textContent='🍳';this.style.fontSize='56px'"/>`
+    :`<div class="home-feat-img">🍳</div>`;
+  box.innerHTML=`<div class="home-featured" onclick="openRecipeDetail('${rid}')">
+    ${imgHtml}
+    <div class="home-feat-body">
+      <div class="home-feat-name">${esc(r.name)}</div>
+      <div class="home-feat-meta">${r.cookTime?'⏱️ '+esc(r.cookTime):''}${r.cookTime&&r.servings?' · ':''}${r.servings?'🍽️ '+esc(r.servings):''}</div>
+    </div>
+  </div>`;
+}
+
+// ── RENDER RECIPES LIST ────────────────────────
+function renderRecipes(){
+  showRV('list');
+  // Show add button only for ibu
+  document.getElementById('recipeAddWrap').style.display=
+    (CU&&CU.id==='ibu')?'':'none';
+  _renderRecipeList('');
+}
+
+function _renderRecipeList(q){
+  const box=document.getElementById('recipesList');
+  const keys=Object.keys(RECIPE_DATA).filter(k=>{
+    if(!q) return true;
+    return RECIPE_DATA[k].name.toLowerCase().includes(q.toLowerCase());
+  });
+  if(!keys.length){
+    box.innerHTML=`<div class="recipe-empty"><div class="recipe-empty-icon">🍳</div><div class="recipe-empty-txt">${q?'No recipes match "'+q+'"':'No recipes yet'}</div></div>`;
+    return;
+  }
+  box.innerHTML=keys.map(k=>{
+    const r=RECIPE_DATA[k];
+    const img=r.photoUrl
+      ?`<img src="${r.photoUrl}" class="recipe-card-img" onerror="this.textContent='🍳';this.style.fontSize='32px'">`
+      :`<div class="recipe-card-img">🍳</div>`;
+    const meta=[r.cookTime?'⏱️ '+r.cookTime:'',r.servings?'🍽️ '+r.servings:''].filter(Boolean).join(' · ');
+    return `<div class="recipe-card" onclick="openRecipeDetail('${k}')">
+      ${img}
+      <div class="recipe-card-body">
+        <div class="recipe-card-name">${esc(r.name)}</div>
+        <div class="recipe-card-meta">${esc(meta)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterRecipes(q){
+  _renderRecipeList(q||'');
+}
+
+// ── RECIPE DETAIL ──────────────────────────────
+function openRecipeDetail(id){
+  // if called from home screen, navigate to recipes first
+  if(!document.getElementById('screen-recipes').classList.contains('active')){
+    go('recipes');
+    setTimeout(()=>_showDetail(id),50);
+  } else {
+    _showDetail(id);
+  }
+}
+
+function _showDetail(id){
+  const r=RECIPE_DATA[id];
+  if(!r) return;
+  showRV('detail');
+  const imgHtml=r.photoUrl
+    ?`<img src="${r.photoUrl}" class="recipe-det-img" onerror="this.textContent='🍳';this.style.fontSize='68px'">`
+    :`<div class="recipe-det-img">🍳</div>`;
+  const chips=[r.cookTime?`<span class="recipe-chip">⏱️ ${esc(r.cookTime)}</span>`:'',
+               r.servings?`<span class="recipe-chip">🍽️ ${esc(r.servings)}</span>`:''].filter(Boolean).join('');
+  const ings=(r.ingredients||'').split('\n').filter(Boolean).map(i=>
+    `<div class="recipe-ing-item"><div class="recipe-dot"></div><div>${esc(i)}</div></div>`
+  ).join('');
+  const steps=(r.steps||'').split('\n').filter(Boolean).map((s,i)=>
+    `<div class="recipe-step-item"><div class="recipe-step-num">${i+1}</div><div>${esc(s)}</div></div>`
+  ).join('');
+  let editBtn='';
+  if(CU&&CU.id==='ibu') editBtn=`<button class="recipe-edit-btn" onclick="openAddRecipe('${id}')">✏️ Edit Recipe</button>`;
+  document.getElementById('recipeDetailBody').innerHTML=`
+    ${imgHtml}
+    <div class="recipe-det-name">${esc(r.name)}</div>
+    <div class="recipe-det-chips">${chips}</div>
+    ${ings?`<div class="recipe-sec-lbl" style="margin-top:4px">Ingredients</div><div>${ings}</div>`:''}
+    ${steps?`<div class="recipe-sec-lbl" style="margin-top:16px">Steps</div><div>${steps}</div>`:''}
+    ${editBtn}
+  `;
+  document.querySelector('.content').scrollTop=0;
+}
+
+// ── ADD / EDIT FORM ────────────────────────────
+function openAddRecipe(editId){
+  showRV('form');
+  _rPhotoFile=null; _rPhotoURL=null;
+  document.getElementById('rEditId').value=editId||'';
+  document.getElementById('rFormTitle').textContent=editId?'Edit Recipe':'New Recipe';
+  document.getElementById('rDelBtn').style.display=editId?'':'none';
+  document.getElementById('rPhotoPreview').style.display='none';
+  document.getElementById('rPhotoLbl').style.display='flex';
+  document.getElementById('rPhotoIn').value='';
+  document.getElementById('upWrap').classList.remove('show');
+  if(editId&&RECIPE_DATA[editId]){
+    const r=RECIPE_DATA[editId];
+    document.getElementById('rName').value=r.name||'';
+    document.getElementById('rCookTime').value=r.cookTime||'';
+    document.getElementById('rServings').value=r.servings||'';
+    document.getElementById('rIngredients').value=r.ingredients||'';
+    document.getElementById('rSteps').value=r.steps||'';
+    if(r.photoUrl){
+      _rPhotoURL=r.photoUrl;
+      const img=document.getElementById('rPhotoPreview');
+      img.src=r.photoUrl; img.style.display='';
+      document.getElementById('rPhotoLbl').style.display='none';
+    }
+  } else {
+    document.getElementById('rName').value='';
+    document.getElementById('rCookTime').value='';
+    document.getElementById('rServings').value='';
+    document.getElementById('rIngredients').value='';
+    document.getElementById('rSteps').value='';
+  }
+  document.querySelector('.content').scrollTop=0;
+}
+
+function previewRPhoto(inp){
+  if(!inp.files||!inp.files[0]) return;
+  _rPhotoFile=inp.files[0];
+  const url=URL.createObjectURL(_rPhotoFile);
+  const img=document.getElementById('rPhotoPreview');
+  img.src=url; img.style.display='';
+  document.getElementById('rPhotoLbl').style.display='none';
+}
+
+async function submitRecipe(){
+  const name=document.getElementById('rName').value.trim();
+  if(!name){alert('Please enter a recipe name');return;}
+  const btn=document.getElementById('rSaveBtn');
+  btn.disabled=true; btn.textContent='Saving…';
+
+  let photoUrl=_rPhotoURL||'';
+
+  // Upload new photo if selected
+  if(_rPhotoFile){
+    try{
+      const id=Date.now().toString(36)+Math.random().toString(36).slice(2);
+      const ref=storage.ref('recipes/'+id+'.jpg');
+      const wrap=document.getElementById('upWrap');
+      const fill=document.getElementById('upFill');
+      const pct=document.getElementById('upPct');
+      wrap.classList.add('show');
+      const task=ref.put(_rPhotoFile,{contentType:'image/jpeg'});
+      await new Promise((res,rej)=>{
+        task.on('state_changed',
+          snap=>{const p=Math.round(snap.bytesTransferred/snap.totalBytes*100);fill.style.width=p+'%';pct.textContent=p+'%';},
+          rej, async ()=>{photoUrl=await task.snapshot.ref.getDownloadURL();res();}
+        );
+      });
+      wrap.classList.remove('show');
+    }catch(e){
+      console.warn('[Photo upload]',e);
+      alert('Photo upload failed. Recipe saved without photo.');
+      photoUrl='';
+    }
+  }
+
+  const editId=document.getElementById('rEditId').value;
+  const rid=editId||(Date.now().toString(36)+Math.random().toString(36).slice(2));
+  const data={
+    name,
+    cookTime:document.getElementById('rCookTime').value.trim(),
+    servings:document.getElementById('rServings').value.trim(),
+    ingredients:document.getElementById('rIngredients').value.trim(),
+    steps:document.getElementById('rSteps').value.trim(),
+    photoUrl,
+    addedBy:'ibu',
+    updatedAt:Date.now()
+  };
+  if(!editId) data.createdAt=Date.now();
+
+  await db.ref('/recipes/'+rid).set(data);
+  btn.disabled=false; btn.textContent='💾 Save Recipe';
+  showToast('Recipe saved!');
+  showRV('list');
+}
+
+async function deleteRecipeById(){
+  const id=document.getElementById('rEditId').value;
+  if(!id) return;
+  if(!confirm('Delete this recipe?')) return;
+  await db.ref('/recipes/'+id).remove();
+  showToast('Recipe deleted');
+  showRV('list');
+}
+
+function showRV(view){
+  document.getElementById('rvList').style.display=view==='list'?'':'none';
+  document.getElementById('rvDetail').style.display=view==='detail'?'':'none';
+  document.getElementById('rvForm').style.display=view==='form'?'':'none';
+}
+
+// helper
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Update home countdown every second
+setInterval(()=>{
+  if(CU&&document.getElementById('screen-home').classList.contains('active')) renderHome();
+},1000);
+
+
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./'})
